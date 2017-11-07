@@ -9,7 +9,7 @@ using namespace std;
 
 
 
-Graphe::Graphe(char* nomFichierSommets, char* nomFichierPoids)
+Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
 {
     // Initialisations
     nV = 0; nA = 0;
@@ -17,7 +17,7 @@ Graphe::Graphe(char* nomFichierSommets, char* nomFichierPoids)
     A = map<long, Arc>();
 
     // Ajout des sommets
-    ifstream fichierSommets(nomFichierSommets);
+    ifstream fichierSommets(nomFichierSommets.c_str());
     if (fichierSommets.is_open()){
         string ligne;
         while(getline(fichierSommets, ligne)){
@@ -52,7 +52,7 @@ Graphe::Graphe(char* nomFichierSommets, char* nomFichierPoids)
     else cout << "Impossible d'ouvrir le fichier : " << nomFichierSommets << endl;
 
     // Ajout des arcs
-    ifstream fichierArcs(nomFichierPoids);
+    ifstream fichierArcs(nomFichierPoids.c_str());
     if (fichierArcs.is_open()){
         string ligne;
         while(getline(fichierArcs, ligne)){
@@ -87,7 +87,7 @@ Graphe::Graphe(char* nomFichierSommets, char* nomFichierPoids)
 
         fichierArcs.close();
     }
-    else cout << "Impossible d'ouvrir le fichier : " << nomFichierSommets << endl;
+    else cout << "Impossible d'ouvrir le fichier : " << nomFichierPoids << endl;
 
 
 }
