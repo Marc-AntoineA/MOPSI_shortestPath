@@ -23,7 +23,7 @@ public:
 
     void show();
     Sommet* get_sommet(int id) const;
-    Graphe(char* nomFichierSommets, char *nomFichierPoids);
+    Graphe(string nomFichierSommets, string nomFichierPoids);
 };
 
 
