@@ -4,13 +4,14 @@
 #include "Dijkstra.h"
 
 #include "Graphe.h"
+#include "Chemin.h"
 #include <string>
 
 using namespace std;
 
 int main()
 {
-    string root = "d:/Users/User/Documents/3-Formation/6 - semestre_3/MOPSI - Projet RO/MOPSI_ShortestPath/MOPSI_ShortestPath/Code/Instance/";
+    string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
     string instance = "NewYork/";
     string sommets = root + instance + "coordsGraphe.co";
     string distances = root + instance + "distancesGraphe.gr";
@@ -19,12 +20,19 @@ int main()
     cout << "\t \t ... Graphe lu" << endl;
 
     Dijkstra D(&G);
+    cout <<"requete Dijkstra :" << endl;
     cout << D.requete(1, 200) << endl;
     //cout << D.requete(1, 48) << endl;
 
     Dijkstradouble DD(&G);
+    cout <<"requete double Dijkstra :" << endl;
     cout << DD.requete(1, 200) << endl;
     //cout << DD.requete(1, 48) << endl;
+/*
+    Dijkstra D2(&G);
+    cout <<"requete Dijkstra avec chemin :" << endl;
+    cout << D2.requete_chemin(1, 200).second << endl;
+*/
     //G.show();
     return 0;
 }

@@ -7,5 +7,6 @@ add_executable(ProjetMOPSI main.cpp
                             Graphe.h Graphe.cpp
                             Algorithme.h Algorithme.cpp
                             fonctionsDiverses.h fonctionsDiverses.cpp
-                            Dijkstra.h Dijkstra.cpp)
+                            Dijkstra.h Dijkstra.cpp
+                            Chemin.h Chemin.cpp)
 

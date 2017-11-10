@@ -2,6 +2,7 @@
 #include "Algorithme.h"
 #include <queue>
 #include <vector>
+#include "Chemin.h"
 #define pp pair<long, long> // paire priorité / id sommet
 
 struct priorite{
@@ -15,6 +16,7 @@ public:
     Dijkstra (Graphe* g):Algorithme(g){}
     void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& distance, map<long, bool>& vus, bool reverse = false);
     virtual long requete(long s, long t);
+    virtual pair<long, Chemin> requete_chemin(long s, long t);//pas prete
     ~Dijkstra(){}
 
 };
