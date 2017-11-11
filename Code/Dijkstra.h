@@ -16,14 +16,14 @@ public:
     Dijkstra (Graphe* g):Algorithme(g){}
     void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& distance, map<long, bool>& vus, bool reverse = false);
     virtual long requete(long s, long t);
-    virtual pair<long, Chemin> requete_chemin(long s, long t);//pas prete
+    virtual pair<long, Chemin> requete_chemin(long s, long t);
     ~Dijkstra(){}
-
 };
 
 class Dijkstradouble:public Dijkstra{
 public:
     Dijkstradouble(Graphe* g):Dijkstra(g){}
     long requete(long s, long t);
+    pair<long, Chemin> requete_chemin(long s, long t);
     ~Dijkstradouble(){}
 };

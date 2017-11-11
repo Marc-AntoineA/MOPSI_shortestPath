@@ -11,8 +11,8 @@ string Chemin::chaine() const{
         return "Le chemin est vide";
     }
     string str="";
-    vector<long>::const_iterator it = listeId.end();
-    for(; it-- != listeId.begin();){
+    vector<long>::const_iterator it = listeId.begin();
+    for(; it!= listeId.end(); it++){
         str+=to_string(*it);
         str+=" ";
     }
@@ -22,4 +22,26 @@ string Chemin::chaine() const{
 ostream& operator<<(ostream &str,const Chemin &C){
     cout << C.chaine() << endl;
     return str;
+}
+
+void Chemin::inversion(){
+    vector<long> newListe;
+    int n=listeId.size();
+    for (int i=0;i<n;i++){
+        newListe.push_back(listeId[n-1-i]);
+    }
+    listeId=newListe;
+}
+
+Chemin Chemin::join(Chemin C){
+    if (listeId[listeId.size()-1]!=C.listeId[0])
+        cerr << "jointure de deux chemins ne correspondant pas"<<endl;
+    Chemin result;
+    for (int i=0;i<C.listeId.size();i++){
+        result.push_back(listeId[i]);
+    }
+    for (int i=1;i<C.listeId.size();i++){
+        result.push_back(C.listeId[i]);
+    }
+    return result;
 }

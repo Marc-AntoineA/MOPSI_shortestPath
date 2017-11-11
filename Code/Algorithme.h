@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphe.h"
+#include "Chemin.h"
 
 class Algorithme{
 protected:
@@ -13,6 +14,7 @@ public:
     void begin(); // Pour mesurer le temps mis pour réaliser une requete :
     double end();
     virtual long requete(long s, long t)=0;
+    Chemin reconstitution_chemin(long s, long t, map<long, long> *distance) const;
     ~Algorithme(){}
 };
 

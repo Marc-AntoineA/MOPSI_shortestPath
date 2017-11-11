@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 int main()
 {
     string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
@@ -28,11 +29,15 @@ int main()
     cout <<"requete double Dijkstra :" << endl;
     cout << DD.requete(1, 200) << endl;
     //cout << DD.requete(1, 48) << endl;
-/*
-    Dijkstra D2(&G);
+
+    Dijkstra DDD(&G);
     cout <<"requete Dijkstra avec chemin :" << endl;
-    cout << D2.requete_chemin(1, 200).second << endl;
-*/
+    cout << DDD.requete_chemin(1, 200).second << endl;
+
+    Dijkstradouble DDDD(&G);
+    cout <<"requete double Dijkstra avec chemin :" << endl;
+    cout << DDDD.requete_chemin(1, 200).second << endl;
+
     //G.show();
     return 0;
 }
