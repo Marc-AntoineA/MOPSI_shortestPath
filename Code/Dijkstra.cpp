@@ -6,10 +6,16 @@
 
 using namespace std;
 
+void Dijkstra::init_distance(long value)
+{
+    map<long, Sommet>::iterator it1;
+    for(it1 = V->begin(); it1 != V->end(); ++it1){
+        distance[it1->second.get_id()] = value;
+    }
+}
 
-void Dijkstra::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& distance, map<long, bool>& vus, bool reverse){
+void Dijkstra::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, bool reverse){
     long u = F.top().second;
-    vus[u] = true;
     F.pop();
     vector<long>* deltaP;
     if(reverse)
@@ -21,198 +27,111 @@ void Dijkstra::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<lon
         Arc* a = &((*A)[(*deltaP)[k]]);
         if(!reverse){
             long v = a->get_v();
-            if(distance[v] > distance[u] + a->get_poids()){
-                distance[v] = distance[u] + a->get_poids();
-                F.push(pp(distance[v], v));
+            if(dist[v] > dist[u] + a->get_poids()){
+                dist[v] = dist[u] + a->get_poids();
+                F.push(pp(dist[v], v));
             }
         }else{
             long v = a->get_u();
-            if(distance[v] > distance[u] + a->get_poids()){
-                distance[v] = distance[u] + a->get_poids();
-                F.push(pp(distance[v], v));
+            if(dist[v] > dist[u] + a->get_poids()){
+                dist[v] = dist[u] + a->get_poids();
+                F.push(pp(dist[v], v));
             }
         }
     }
 }
 
-long Dijkstra::requete(long s, long t){
+long Dijkstra::requete(long s, long t, bool verbose){
     begin();
     priority_queue<pp, vector<pp>, priorite> F;
 
-    map<long, long> distance; // Couple distance, id sommet
-    map<long, bool> vus;
-
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        distance[it1->second.get_id()] = LONG_MAX;
-        vus[it1->second.get_id()] = false;
-    }
-
+    init_distance(LONG_MAX);
     distance[s] = 0;
     F.push(pp(0, s));
-
-    while(!F.empty() && !vus[t]){
-        depileEmpile(F, distance, vus);
+    bool stop = false;
+    while(!F.empty() && !stop){
+        if(F.top().second == t)
+            stop = true;
+        depileEmpile(F, distance);
     }
-    cout << "Duration : " << end() << endl;
+
+    if(verbose)
+        cout << "Duration : " << end() << endl;
+
     return distance[t];
 }
 
-pair<long, Chemin> Dijkstra::requete_chemin(long s, long t){
-    begin();
-    priority_queue<pp, vector<pp>, priorite> F;
-
-    map<long, long> distance; // Couple distance, id sommet
-    map<long, bool> vus;
-
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        distance[it1->second.get_id()] = LONG_MAX;
-        vus[it1->second.get_id()] = false;
-    }
-
-    distance[s] = 0;
-    F.push(pp(0, s));
-
-    while(!F.empty() && !vus[t]){
-        depileEmpile(F, distance, vus);
-    }
-    cout << "Duration : " << end() << endl;
-    return pair<long, Chemin> (distance[t], reconstitution_chemin_forward(s,t,&distance));
+pair<long, Chemin> Dijkstra::requete_chemin(long s, long t, bool verbose){
+    requete(s, t, verbose);
+    return pair<long, Chemin> (distance[t], reconstitution_chemin_forward(s,t, &distance));
 }
 
-long Dijkstradouble::requete(long s, long t){
+void Dijkstradouble::init_distances(long value){
+    map<long, Sommet>::iterator it1;
+    for(it1 = V->begin(); it1 != V->end(); ++it1){
+        distanceForward[it1->second.get_id()] = value;
+        distanceBackward[it1->second.get_id()] = value;
+    }
+}
+
+long Dijkstradouble::requete(long s, long t, bool verbose){
     begin();
     priority_queue<pp, vector<pp>, priorite> Forward;
     priority_queue<pp, vector<pp>, priorite> Backward;
-
-    map<long, long> distanceForward; // Couple distance, id sommet
-    map<long, long> distanceBackward;
-
-    map<long, bool> vusForward;
-    map<long, bool> vusBackward;
-
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        distanceForward[it1->second.get_id()] = LONG_MAX/3;
-        distanceBackward[it1->second.get_id()] = LONG_MAX/3;
-        vusForward[it1->second.get_id()] = false;
-        vusBackward[it1->second.get_id()] = false;
-    }
+    init_distances(LONG_MAX/3);
 
     distanceForward[s] = 0;
     distanceBackward[t] = 0;
 
     Forward.push(pp(0, s));
-    vusForward[s] = true;
     Backward.push(pp(0, t));
-    vusBackward[t] = true;
     long mu = LONG_MAX;
     while(!Forward.empty() && !Backward.empty()){
-
         if(Forward.top().first + Backward.top().first > mu){
-            cout << "Duration : " << end() << endl;
+            cout << "ici";
+            if(verbose)
+                cout << "Duration : " << end() << endl;
             return mu;
         }
-        // On depile l'élément de Forward et on regarde si on l'a déjà vu dans Backward.
-        // Sinon on empile dans Forward ses voisins en mettant à jour les distances
         long u = Forward.top().second;
-        depileEmpile(Forward, distanceForward, vusForward);
+        depileEmpile(Forward, distanceForward);
         if (distanceBackward[u] + distanceForward[u] < mu){
             mu = distanceBackward[u] + distanceForward[u];
+            point_commun = u;
         }
 
         long v = Backward.top().second;
-        depileEmpile(Backward, distanceBackward,vusBackward, true);
+        depileEmpile(Backward, distanceBackward, true);
         if(distanceBackward[v] + distanceForward[v] < mu){
             mu = distanceBackward[v] + distanceForward[v];
+            point_commun = v;
         }
-
-
-
-
-
-
-
-
-
-            /*if(vusForward[v] && vusBackward[v]){
-            cout << "vusForward" << endl;
-            cout << "Duration : " << end() << endl;
-            cout << v << " | " <<distanceBackward[v] << " | " << distanceForward[v] << endl;
-            //return distanceForward[v] + distanceBackward[v];
-        }*/
-
-
-
     }
+
     if(Forward.empty()){
-         cout << "forwardEmpty" << endl;
-        cout << "Duration : " << end() << endl;
+        cout << "forwardempty" << endl;
+        if(verbose){
+            cout << "Duration : " << end() << endl;
+
+        }
         return distanceForward[t];// normalement jamais atteint
     }
     else{
-         cout << "backwardEmpty" << endl;
-        cout << "Duration : " << end() << endl;
+        cout << "bacrdempty" << endl;
+        if(verbose)
+            cout << "Duration : " << end() << endl;
         return distanceBackward[s];
    }
 }
 
-pair<long, Chemin> Dijkstradouble::requete_chemin(long s, long t){
-    begin();
-    priority_queue<pp, vector<pp>, priorite> Forward;
-    priority_queue<pp, vector<pp>, priorite> Backward;
-
-    map<long, long> distanceForward; // Couple distance, id sommet
-    map<long, long> distanceBackward;
-
-    map<long, bool> vusForward;
-    map<long, bool> vusBackward;
-
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        distanceForward[it1->second.get_id()] = LONG_MAX/3;
-        distanceBackward[it1->second.get_id()] = LONG_MAX/3;
-        vusForward[it1->second.get_id()] = false;
-        vusBackward[it1->second.get_id()] = false;
-    }
-
-    distanceForward[s] = 0;
-    distanceBackward[t] = 0;
-
-    Forward.push(pp(0, s));
-    vusForward[s] = true;
-    Backward.push(pp(0, t));
-    vusBackward[t] = true;
-    long mu = LONG_MAX;
-    bool fini = false;
-    long point_commun;
-    while(!Forward.empty() && !Backward.empty() && !fini){
-
-        if(Forward.top().first + Backward.top().first > mu){
-            cout << "Duration : " << end() << endl;
-            fini = true;
-        }
-        // On depile l'élément de Forward et on regarde si on l'a déjà vu dans Backward.
-        // Sinon on empile dans Forward ses voisins en mettant à jour les distances
-        long u = Forward.top().second;
-        depileEmpile(Forward, distanceForward, vusForward);
-        if (distanceBackward[u] + distanceForward[u] < mu){
-            mu = distanceBackward[u] + distanceForward[u];
-            point_commun=u;
-        }
-
-        long v = Backward.top().second;
-        depileEmpile(Backward, distanceBackward,vusBackward, true);
-        if(distanceBackward[v] + distanceForward[v] < mu){
-            mu = distanceBackward[v] + distanceForward[v];
-            point_commun=v;
-        }
-    }
-
+pair<long, Chemin> Dijkstradouble::requete_chemin(long s, long t, bool verbose){
+    long mu = requete(s, t, verbose);
     //on retrouve maintenant le chemin
     Chemin C_forward = reconstitution_chemin_forward(s, point_commun, &distanceForward);
     Chemin C_backward = reconstitution_chemin_backward(point_commun, t, &distanceBackward);
+    cout << endl << "Cfw" << endl << C_forward << endl;
+    C_backward.inversion();
+    cout << endl << "Cbw" << endl << C_backward << endl;
     return pair<long, Chemin> (mu, C_forward.join(C_backward));
 }
 

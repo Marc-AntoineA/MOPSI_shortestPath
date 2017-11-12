@@ -12,18 +12,26 @@ struct priorite{
 };
 
 class Dijkstra: public Algorithme{
+ private:
+    map<long, long> distance;
+    void init_distance(long value);
 public:
     Dijkstra (Graphe* g):Algorithme(g){}
-    void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& distance, map<long, bool>& vus, bool reverse = false);
-    virtual long requete(long s, long t);
-    virtual pair<long, Chemin> requete_chemin(long s, long t);
+    void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, bool reverse = false);
+    virtual long requete(long s, long t, bool verbose = false);
+    virtual pair<long, Chemin> requete_chemin(long s, long t, bool verbose = false);
     ~Dijkstra(){}
 };
 
 class Dijkstradouble:public Dijkstra{
 public:
+    map<long, long> distanceForward;
+    map<long, long> distanceBackward;
+    long point_commun;
+    void init_distances(long value);
+public:
     Dijkstradouble(Graphe* g):Dijkstra(g){}
-    long requete(long s, long t);
-    pair<long, Chemin> requete_chemin(long s, long t);
+    long requete(long s, long t, bool verbose = false);
+    pair<long, Chemin> requete_chemin(long s, long t, bool verbose = false);
     ~Dijkstradouble(){}
 };

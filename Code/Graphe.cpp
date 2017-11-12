@@ -3,14 +3,15 @@
 #include <fstream>
 #include <cassert>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 #include "fonctionsDiverses.h"
 
 using namespace std;
 
-
-
 Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
 {
+    srand (time(NULL));
     // Initialisations
     nV = 0; nA = 0;
     V = map<long, Sommet>();
@@ -88,14 +89,11 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
         fichierArcs.close();
     }
     else cout << "Impossible d'ouvrir le fichier : " << nomFichierPoids << endl;
-
-
 }
 
 
 
 void Graphe::show(){
-
     map<long, Sommet>::iterator it1;
     for(it1 = V.begin(); it1 != V.end(); ++it1){
         cout << it1->second <<endl;
@@ -107,3 +105,9 @@ void Graphe::show(){
     }
 }
 
+
+int Graphe::get_randomSommet(){
+    map<long, Sommet>::iterator it = V.begin();
+    advance(it, rand()%V.size());
+    return it->first;
+}

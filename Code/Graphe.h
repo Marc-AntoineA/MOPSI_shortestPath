@@ -17,9 +17,10 @@ private:
 
 public:
     map<long, Sommet>* get_sommets(){return &V;}
+    int get_randomSommet();
     map<long, Arc>* get_arcs(){return &A;}
     long get_nV() const {return nV;}
-    long gett_nA() const {return nA;}
+    long get_nA() const {return nA;}
 
     void show();
     Sommet* get_sommet(int id) const;
