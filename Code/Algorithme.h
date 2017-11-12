@@ -15,6 +15,8 @@ public:
     double end();
     virtual long requete(long s, long t)=0;
     Chemin reconstitution_chemin(long s, long t, map<long, long> *distance) const;
+    map<long, Sommet>* get_V(){return V;}
+    map<long, Arc>* get_A(){return A;}
     ~Algorithme(){}
 };
 

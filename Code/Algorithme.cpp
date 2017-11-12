@@ -38,7 +38,7 @@ Chemin Algorithme::reconstitution_chemin(long s, long t, map<long, long> *distan
             }
         }
         if (!trouve){
-            cerr<<"pas de chemin"<<endl;
+            cerr<<"Algorithme::reconstitution_chemin : pas de chemin"<<endl;
             C.inversion();
             return C;
         }

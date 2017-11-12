@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <vector>
+#include<map>
+#include"Arcs.h"
+#include"Sommets.h"
 using namespace std;
 
 class Chemin{
@@ -11,6 +14,6 @@ public:
     void inversion();   //inverser le sens du chemin
     Chemin join(Chemin C);
     string chaine() const;
-
+    double longueur(map<long, Arc> *A, map<long, Sommet>* V) const;
 };
 ostream& operator<<(ostream&str,const Chemin &C);

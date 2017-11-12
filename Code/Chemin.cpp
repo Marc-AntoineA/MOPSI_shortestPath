@@ -45,3 +45,25 @@ Chemin Chemin::join(Chemin C){
     }
     return result;
 }
+
+double Chemin::longueur(map<long, Arc> *A, map<long, Sommet>* V) const{
+    long uCourant, vCourant;
+    double result = 0;
+    bool trouve;
+    for (int i=0; i<listeId.size()-1;i++){
+        uCourant = listeId[i];
+        vCourant = listeId[i+1];
+        vector<long> *deltaM = ((*V)[vCourant]).get_deltaM();
+        trouve=false;
+        for(int k = 0; (k < deltaM->size()) && !trouve; k++){
+            Arc* a = &((*A)[(*deltaM)[k]]);
+            if (uCourant==a->get_u()){
+                result+=a->get_poids();
+                trouve=true;
+            }
+        }
+        if (!trouve){
+            cerr<<"Chemin::longueur : ceci n'est pas un chemin"<<endl;
+        }
+    }
+}
