@@ -78,7 +78,7 @@ pair<long, Chemin> Dijkstra::requete_chemin(long s, long t){
         depileEmpile(F, distance, vus);
     }
     cout << "Duration : " << end() << endl;
-    return pair<long, Chemin> (distance[t], reconstitution_chemin(s,t,&distance));
+    return pair<long, Chemin> (distance[t], reconstitution_chemin_forward(s,t,&distance));
 }
 
 long Dijkstradouble::requete(long s, long t){
@@ -211,12 +211,8 @@ pair<long, Chemin> Dijkstradouble::requete_chemin(long s, long t){
     }
 
     //on retrouve maintenant le chemin
-    cout<<distanceForward[point_commun]<<endl;
-    cout<<distanceBackward[point_commun]<<endl;
-    Chemin C_backward = reconstitution_chemin(t, point_commun, &distanceBackward);
-    Chemin C_forward = reconstitution_chemin(s, point_commun, &distanceForward);
-    C_backward.inversion();
-
+    Chemin C_forward = reconstitution_chemin_forward(s, point_commun, &distanceForward);
+    Chemin C_backward = reconstitution_chemin_backward(point_commun, t, &distanceBackward);
     return pair<long, Chemin> (mu, C_forward.join(C_backward));
 }
 

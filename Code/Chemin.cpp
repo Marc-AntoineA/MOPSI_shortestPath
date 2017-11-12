@@ -8,7 +8,7 @@ void Chemin::push_back(long id){
 
 string Chemin::chaine() const{
     if (listeId.empty()){
-        return "Le chemin est vide";
+        return "Chemin::chaine : le chemin est vide";
     }
     string str="";
     vector<long>::const_iterator it = listeId.begin();
@@ -20,7 +20,7 @@ string Chemin::chaine() const{
 }
 
 ostream& operator<<(ostream &str,const Chemin &C){
-    cout << C.chaine() << endl;
+    cout << C.chaine();
     return str;
 }
 
@@ -35,9 +35,9 @@ void Chemin::inversion(){
 
 Chemin Chemin::join(Chemin C){
     if (listeId[listeId.size()-1]!=C.listeId[0])
-        cerr << "jointure de deux chemins ne correspondant pas"<<endl;
+        cerr << "Chemin::join : jointure de deux chemins ne correspondant pas"<<endl;
     Chemin result;
-    for (int i=0;i<C.listeId.size();i++){
+    for (int i=0;i<listeId.size();i++){
         result.push_back(listeId[i]);
     }
     for (int i=1;i<C.listeId.size();i++){
@@ -63,7 +63,7 @@ double Chemin::longueur(map<long, Arc> *A, map<long, Sommet>* V) const{
             }
         }
         if (!trouve){
-            cerr<<"Chemin::longueur : ceci n'est pas un chemin"<<endl;
+            cerr<<"Chemin::longueur : ceci n'est pas un chemin. cassure au "<<i+1<<"eme sommet"<<endl;
         }
     }
 }

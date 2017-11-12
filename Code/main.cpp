@@ -30,17 +30,15 @@ int main()
     cout << DD.requete(1, 200) << endl;
     //cout << DD.requete(1, 48) << endl;
 
-    Dijkstra DDD(&G);
     cout <<"requete Dijkstra avec chemin :" << endl;
-    Chemin C1 = DDD.requete_chemin(1, 200).second;
+    Chemin C1 = D.requete_chemin(1, 200).second;
     cout << C1 << endl;
-    cout <<"La longueur du chemin est de : " << C1.longueur(DDD.get_A(), DDD.get_V())<<endl;
+    cout <<"La longueur du chemin est de : " << C1.longueur(D.get_A(), D.get_V())<<endl;
 
-    Dijkstradouble DDDD(&G);
     cout <<"requete double Dijkstra avec chemin :" << endl;
-    Chemin C2 = DDDD.requete_chemin(1, 200).second;
+    Chemin C2 = DD.requete_chemin(1, 200).second;
     cout << C2 << endl;
-    cout <<"La longueur du chemin est de : " << C2.longueur(DDDD.get_A(), DDDD.get_V())<<endl;
+    cout <<"La longueur du chemin est de : " << C2.longueur(DD.get_A(), DD.get_V())<<endl;
 
     //G.show();
     return 0;
