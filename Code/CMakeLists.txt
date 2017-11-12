@@ -9,5 +9,6 @@ add_executable(ProjetMOPSI main.cpp
                             fonctionsDiverses.h fonctionsDiverses.cpp
                             Dijkstra.h Dijkstra.cpp
                             Chemin.h Chemin.cpp
-                            Tests.h Tests.cpp)
+                            Tests.h Tests.cpp
+                            AStar.h AStar.cpp)
 

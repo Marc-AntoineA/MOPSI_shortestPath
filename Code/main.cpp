@@ -22,31 +22,7 @@ int main()
     Graphe G(sommets, distances);
     cout << "\t \t ... Graphe lu" << endl;
 
-    //test_requete(G);
 
-    Dijkstradouble DD(&G);
-    Dijkstra D(&G);
-    cout <<"requete Dijkstra :" << endl;
-    cout << D.requete(5279, 6937) << endl;
-    //cout << D.requete_chemin(5612, 29793).second << endl<<endl;
-    //cout << D.requete(1, 48) << endl;
-
-    cout <<"requete double Dijkstra :" << endl;
-    cout << DD.requete(5279, 6937) << endl;
-    //cout << DD.requete_chemin(5612, 29793).second << endl<<endl;
-    /*cout << DD.point_commun << endl;
-    //cout << DD.requete(1, 48) << endl;
-
-    cout <<"requete Dijkstra avec chemin :" << endl;
-    Chemin C1 = D.requete_chemin(1, 200).second;
-    cout << C1 << endl;
-    cout <<"La longueur du chemin est de : " << C1.longueur(D.get_A(), D.get_V())<<endl;
-
-    cout <<"requete double Dijkstra avec chemin :" << endl;
-    Chemin C2 = DD.requete_chemin(1, 200).second;
-    cout << C2 << endl;
-    cout <<"La longueur du chemin est de : " << C2.longueur(DD.get_A(), DD.get_V())<<endl;
-    */
-    //G.show();
+    test_requete(G);
     return 0;
 }

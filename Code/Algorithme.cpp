@@ -16,6 +16,7 @@ void Algorithme::begin(){
 
 double Algorithme::end(){
     double now = double(clock())/CLOCKS_PER_SEC;
+    duration = now - timer;
     return  now - timer;
 }
 

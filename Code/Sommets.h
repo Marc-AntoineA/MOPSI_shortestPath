@@ -25,7 +25,7 @@ public:
     pair<int, int> get_coords() const{return coords;}
     vector<long>* get_deltaP(){return &deltaP;}
     vector<long>* get_deltaM(){return &deltaM;}
-
+    long distance(Sommet& v);
 
 };
 
