@@ -11,15 +11,13 @@ class Dijkstra: public AStar{
 public:
     Dijkstra (Graphe* g):AStar(g){}
     ~Dijkstra(){}
-    virtual int pi(long u, long t);
+    virtual long pi(long u, long t){return 0;}
 };
 
-class Dijkstradouble:public Dijkstra{
+class DijkstraBidirectionnel:public AStarBidirectionnel{
 public:
-    long point_commun;
 public:
-    Dijkstradouble(Graphe* g):Dijkstra(g){}
-    long requete(long s, long t, bool verbose = false);
-    pair<long, Chemin> requete_chemin(long s, long t, bool verbose = false);
-    ~Dijkstradouble(){}
+    DijkstraBidirectionnel(Graphe* g):AStarBidirectionnel(g){}
+    virtual long pi(long u, long t){return 0;}
+    ~DijkstraBidirectionnel(){}
 };

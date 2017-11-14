@@ -34,11 +34,12 @@ double to_grad(int alpha){
 const int R = 636.6000; // rayon de la terre
 long Sommet::distance(Sommet &v){
     pair<int, int> vCoords = v.get_coords();
-    return 2*R*asin(sqrt(sin((to_grad(coords.second)-to_grad(vCoords.second))/2)
+    // *.99 pour être sur d'etre inférieur à la distance réelle
+    return .99*(2*R*asin(sqrt(sin((to_grad(coords.second)-to_grad(vCoords.second))/2)
                          *sin((to_grad(coords.second)-to_grad(vCoords.second))/2)
                            + cos(to_grad(coords.second))*cos(to_grad(vCoords.second))
                            * sin((to_grad(coords.first) - to_grad(vCoords.first))/2)
-                           * sin((to_grad(coords.first) - to_grad(vCoords.first))/2)));
+                           * sin((to_grad(coords.first) - to_grad(vCoords.first))/2))));
 
 }
 

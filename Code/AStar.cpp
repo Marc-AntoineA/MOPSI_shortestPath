@@ -22,7 +22,7 @@ void AStar::depileEmpile(long t, priority_queue<pp, vector<pp>, priorite>& F, ma
             long v = a->get_u();
             if(dist[v] > dist[u] + a->get_poids()){
                 dist[v] = dist[u] + a->get_poids();
-                F.push(pp(dist[v] + pi(v, t), v));// faut surement avoir s pour reverse
+                F.push(pp(dist[v] + pi(v, t), v));
             }
         }
     }
@@ -66,6 +66,66 @@ pair<long, Chemin> AStar::requete_chemin(long s, long t, bool verbose){
     return pair<long, Chemin> (distanceForward[t], reconstitution_chemin_forward(s,t, &distanceForward));
 }
 
-int AStarGeographique::pi(long u, long t){
-    return (*V)[u].distance((*V)[t]);
+long AStarBidirectionnel::requete(long s, long t, bool verbose){
+    begin();
+    priority_queue<pp, vector<pp>, priorite> Forward;
+    priority_queue<pp, vector<pp>, priorite> Backward;
+    init_distanceForward(LONG_MAX/3);
+    init_distanceBackward(LONG_MAX/3);
+
+    distanceForward[s] = 0;
+    distanceBackward[t] = 0;
+
+    Forward.push(pp(0, s));
+    Backward.push(pp(0, t));
+    long mu = LONG_MAX;
+    while(!Forward.empty() && !Backward.empty()){
+
+        long u = Forward.top().second;
+        long v = Backward.top().second;
+        if(distanceForward[u] + distanceBackward[v] > mu){
+            end();
+            if(verbose)
+                cout << "Duration : " << get_duration() << endl;
+            return mu;
+        }
+        depileEmpile(t, Forward, distanceForward);
+        if (distanceBackward[u] + distanceForward[u] < mu){
+            mu = distanceBackward[u] + distanceForward[u];
+            point_commun = u;
+        }
+
+        depileEmpile(s, Backward, distanceBackward, true);
+        if(distanceBackward[v] + distanceForward[v] < mu){
+            mu = distanceBackward[v] + distanceForward[v];
+            point_commun = v;
+        }
+    }
+
+    if(Forward.empty()){
+        end();
+        if(verbose){
+            cout << "Forward empty " << endl;
+            cout << "Duration : " << get_duration() << endl;
+
+        }
+        return distanceForward[t];// normalement jamais atteint
+    }
+    else{
+        end();
+        if(verbose){
+            cout << "Backward empty " << endl;
+            cout << "Duration : " << get_duration() << endl;
+        }
+        return distanceBackward[s];
+   }
+}
+
+pair<long, Chemin> AStarBidirectionnel::requete_chemin(long s, long t, bool verbose){
+    long mu = requete(s, t, verbose);
+    //on retrouve maintenant le chemin
+    Chemin C_forward = reconstitution_chemin_forward(s, point_commun, &distanceForward);
+    Chemin C_backward = reconstitution_chemin_backward(point_commun, t, &distanceBackward);
+
+    return pair<long, Chemin> (mu, C_forward.join(C_backward));
 }
