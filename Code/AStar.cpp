@@ -1,7 +1,7 @@
 #include "AStar.h"
-#include "queue"
+#include <queue>
 
-void AStar::depileEmpile(long t, priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, bool reverse){
+void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t, long s, bool reverse){
     long u = F.top().second;
     F.pop();
     vector<long>* deltaP;
@@ -16,13 +16,13 @@ void AStar::depileEmpile(long t, priority_queue<pp, vector<pp>, priorite>& F, ma
             long v = a->get_v();
             if(dist[v] > dist[u] + a->get_poids()){
                 dist[v] = dist[u] + a->get_poids();
-                F.push(pp(dist[v] + pi(v, t), v));
+                F.push(pp(dist[v] + pi(v, t, s), v));
             }
         }else{
             long v = a->get_u();
             if(dist[v] > dist[u] + a->get_poids()){
                 dist[v] = dist[u] + a->get_poids();
-                F.push(pp(dist[v] + pi(v, t), v));
+                F.push(pp(dist[v] + pi(v, t, s), v));
             }
         }
     }
@@ -52,7 +52,7 @@ long AStar::requete(long s, long t, bool verbose){
     while(!F.empty() && !stop){
         if(F.top().second == t)
             stop = true;
-        depileEmpile(t, F, distanceForward);
+        depileEmpile(F, distanceForward, t);
     }
     end();
     if(verbose)
@@ -89,13 +89,13 @@ long AStarBidirectionnel::requete(long s, long t, bool verbose){
                 cout << "Duration : " << get_duration() << endl;
             return mu;
         }
-        depileEmpile(t, Forward, distanceForward);
+        depileEmpile(Forward, distanceForward, t);
         if (distanceBackward[u] + distanceForward[u] < mu){
             mu = distanceBackward[u] + distanceForward[u];
             point_commun = u;
         }
 
-        depileEmpile(s, Backward, distanceBackward, true);
+        depileEmpile(Backward, distanceBackward, s, true);
         if(distanceBackward[v] + distanceForward[v] < mu){
             mu = distanceBackward[v] + distanceForward[v];
             point_commun = v;

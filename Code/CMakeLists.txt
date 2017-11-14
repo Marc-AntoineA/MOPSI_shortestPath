@@ -10,5 +10,6 @@ add_executable(ProjetMOPSI main.cpp
                             Dijkstra.h Dijkstra.cpp
                             Chemin.h Chemin.cpp
                             Tests.h Tests.cpp
-                            AStar.h AStar.cpp)
+                            AStar.h AStar.cpp
+                            ALT.h ALT.cpp)
 

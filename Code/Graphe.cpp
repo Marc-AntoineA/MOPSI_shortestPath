@@ -106,7 +106,7 @@ void Graphe::show(){
 }
 
 
-int Graphe::get_randomSommet(){
+long Graphe::get_randomSommet(){
     map<long, Sommet>::iterator it = V.begin();
     advance(it, rand()%V.size());
     return it->first;

@@ -18,9 +18,9 @@ protected:
     void init_distanceBackward(long value);
 
 public:
-    virtual long pi(long u, long t)=0;
+    virtual long pi(long u, long t, long s)=0;
     AStar(Graphe* g):Algorithme(g){}
-    void depileEmpile(long t, priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, bool reverse = false);
+    void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t = 0, long s = 0, bool reverse = false);
     virtual long requete(long s, long t, bool verbose = false);
     virtual pair<long, Chemin> requete_chemin(long s, long t, bool verbose = false);
     ~AStar(){}
@@ -40,11 +40,11 @@ public:
 class ASG: public AStar{
 public:
     ASG(Graphe *g):AStar(g){}
-    virtual long pi(long u, long t){return (*V)[u].distance((*V)[t]);}
+    virtual long pi(long u, long t, long s){return (*V)[u].distance((*V)[t]);}
 };
 
 class ASGBD:public AStarBidirectionnel{
 public:
     ASGBD(Graphe* g):AStarBidirectionnel(g){}
-    virtual long pi(long u, long t){return (*V)[u].distance((*V)[t]);}
+    virtual long pi(long u, long t, long s){return ((*V)[u].distance((*V)[t]) - (*V)[u].distance((*V)[s]))/2;}
 };
