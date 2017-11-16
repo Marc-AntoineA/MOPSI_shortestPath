@@ -1,3 +1,4 @@
+#pragma once
 #include "Dijkstra.h"
 #include "Graphe.h"
 #include "Chemin.h"

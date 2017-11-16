@@ -11,15 +11,17 @@ from math import pi, asin, sin, cos
 #-------------------------------------------------------------
 #0/ Parametres
 
-bounding_box = (-9.5,35.9,46.8,60.0) #Europe
+#pour trouver la bounding_box : http://boundingbox.klokantech.com/
+bounding_box = (45.481318, 5.83374,45.636127, 6.060333,) # Chambéry
+#bounding_box = (-9.5,35.9,46.8,60.0) #Europe
 #bounding_box = (-5.1,42.13,8.17,51.54) # France
 #bounding_box = (4.4385,45.0347,6.1414,45.9664) # Rhone alpes
 #bounding_box = (5.9559,47.5135,6.7017,47.8084) # test
-file_description = "Europe"
+file_description = "Chambery"
 output_coords = "coords.co"
 output_distance = "distance.t"
 roads = ["motorway", "trunk","primary", "secondary", "tertiary", "unclassified", "residential"]
-level = 3 # on execute la requete sur "motorway|motorway_link|trunk|trunk_link"
+level = 7 # on execute la requete sur "motorway|motorway_link|trunk|trunk_link"
 
 def requete_road():
     str = "'a"
@@ -33,9 +35,9 @@ def requete_road():
 
 # Si tu veux tester Guillaume
 api = overpy.Overpass(url="http://overpass-api.de/api/interpreter")
-api = overpy.Overpass(url="http://127.0.0.1/api/interpreter")
+#api = overpy.Overpass(url="http://127.0.0.1/api/interpreter")
 query = "[out:json];way['highway'~{}]{};node(w);out;way['highway'~{}]{};out;".format(requete_road(), bounding_box, requete_road(), bounding_box)
-print(query)
+print(query+)
 result = api.query(query)
 print(len(result.ways))
 # Forme du resultat

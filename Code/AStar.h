@@ -7,7 +7,7 @@
 struct priorite{
     bool operator()(const pp &p1, const pp &p2){
         return p1.first > p2.first;
-    }
+    }    
 };
 
 class AStar: public Algorithme{
