@@ -61,12 +61,12 @@ long AStar::requete(long s, long t, bool verbose){
     return distanceForward[t];
 }
 
-pair<long, Chemin> AStar::requete_chemin(long s, long t, bool verbose){
+pair<long, Chemin> AStar::chemin(long s, long t, bool verbose){
     requete(s, t, verbose);
     return pair<long, Chemin> (distanceForward[t], reconstitution_chemin_forward(s,t, &distanceForward));
 }
 
-long AStarBidirectionnel::requete(long s, long t, bool verbose){
+long AStar::requete_bi(long s, long t, bool verbose){
     begin();
     priority_queue<pp, vector<pp>, priorite> Forward;
     priority_queue<pp, vector<pp>, priorite> Backward;
@@ -121,7 +121,7 @@ long AStarBidirectionnel::requete(long s, long t, bool verbose){
    }
 }
 
-pair<long, Chemin> AStarBidirectionnel::requete_chemin(long s, long t, bool verbose){
+pair<long, Chemin> AStar::chemin_bi(long s, long t, bool verbose){
     long mu = requete(s, t, verbose);
     //on retrouve maintenant le chemin
     Chemin C_forward = reconstitution_chemin_forward(s, point_commun, &distanceForward);

@@ -9,52 +9,49 @@ long ALT::pi(long u, long t, long s){
     long M = 0; // borne maximale (ou son estimation)
     int n = L.size();
     for(int ld = 0; ld < n; ld++){
-        M = max(M, d(u, ld) - d(t, ld));
-        M = max(M, d(ld, t) - d(ld, u));
+        M = max(M, d(ld, t)-d(ld, u));
     }
     return M;
 }
 
 void ALT::preprocess(int n, bool verbose){
-
-    double time_begin = double(clock());
+    begin();
     if(verbose){
         cout << "Pre-process en cours..." << endl;
-    }
-    long ld;
-
-    map<long, Sommet>::iterator it1;
-    long u; long v;
-    long a_faire = 2*n * G->get_nV();
-    double faits = 0;
-    double prec = 0;
-    if(verbose){
-        cout << a_faire << " requetes a realiser " << endl;
         cout << "0% : " << flush;
     }
+    L.clear();
+    long s; long v;
+    double prec = 0;
+    for(int k = 0; k < n; k++){
+        s = G->get_randomSommet();
+        L.push_back(s);
 
-    for(int k = 0; k < n; k++){// ABRUTI ! Faut pas faire ça du tout... mais utiliser un simple Dijkstra un vers tous :p
-        ld = G->get_randomSommet();
-        L.push_back(ld);
-        for(it1 = V->begin(); it1 != V->end(); ++it1){
-            u = ld;
-            v = it1->second.get_id();
-            subDist[pp(u, v)] = requete(u, v);
-            faits++;
-            subDist[pp(v, u)] = requete(v, u);
-            faits++;
-            if(verbose && faits / a_faire - prec > 0.05){
-                prec = faits / a_faire;
-                cout << "=" << flush;
-            }
+        priority_queue<pp, vector<pp>, priorite> F;
+        init_distanceForward(LONG_MAX);
+        distanceForward[s] = 0;
+
+        F.push(pp(0, s));
+        while(!F.empty()){
+            depileEmpile(F, distanceForward, F.top().second, s);// pas genant car le potentiel sera toujours nul a ce moment la
+        }
+        // On stocke les distances
+        map<long, Sommet>::iterator it1;
+        for(it1 = V->begin(); it1 != V->end(); it1++){
+            v = it1->first;
+            subDist[pp(s, v)] = distanceForward[v];
         }
 
-
+        if(verbose && (double)k / n - prec > 0.05){
+            cout << "="<< flush;
+            prec = k/n;
+        }
     }
-    if(verbose)
-        cout << " 100% : " << (double(clock()) - time_begin)/CLOCKS_PER_SEC << endl;
-        cout << "\t \t... pre process termine. " << endl;
     end();
+    if(verbose)
+        cout << " 100% " << endl;
+        cout << "Duration : " << get_duration() << endl;
+
 }
 
 void ALT::preprocess(string nomInput, bool verbose){
@@ -122,7 +119,6 @@ void ALT::sauvegarde(string nomOutput, string instance, bool verbose){
             for(it1 = V->begin(); it1 != V->end(); it1++){
                 v = it1->second.get_id();
                 output << "d " << u << " " << v << " " << d(u, v) << endl;
-                output << "d " << v << " " << u << " " << d(v, u) << endl;
             }
         }
     }else{

@@ -13,6 +13,7 @@ from math import pi, asin, sin, cos
 
 #pour trouver la bounding_box : http://boundingbox.klokantech.com/
 bounding_box = (45.481318, 5.83374,45.636127, 6.060333) # Chambéry
+bounding_box = (45.501318, 5.93374,45.636127, 6.060333) # Chambéry_small
 #inverser les coords comme pour Chy
 #bounding_box = (-9.5,35.9,46.8,60.0) #Europe
 #bounding_box = (-5.1,42.13,8.17,51.54) # France
@@ -38,7 +39,7 @@ def requete_road():
 api = overpy.Overpass(url="http://overpass-api.de/api/interpreter")
 #api = overpy.Overpass(url="http://127.0.0.1/api/interpreter")
 query = "[out:json];way['highway'~{}]{};node(w);out;way['highway'~{}]{};out;".format(requete_road(), bounding_box, requete_road(), bounding_box)
-print(query)
+print(query+"")
 
 result = api.query(query)
 print(len(result.ways))
@@ -118,10 +119,6 @@ newsId
 for W in simplified_ways:
     for k in range(len(W[0])):
         W[0][k] = newsId[W[0][k]]
-simplified_ways[0]
-W=simplified_ways[0]
-W[0][2] = newsId[W[0][2]]
-W
 
 """
     Écriture au format 'v id long lat' où long et lat sont

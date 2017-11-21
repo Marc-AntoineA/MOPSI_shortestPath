@@ -15,9 +15,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt){
     int alt = 0;
 
     Dijkstra D(&G);
-    DijkstraBidirectionnel DD(&G);
     ASG Asg(&G);
-    ASGBD Asgbd(&G);
     ALT Alt(&G);
     Alt.preprocess(pp_alt);
 
@@ -28,8 +26,8 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt){
         long distance_ref = D.requete(s, t);
         duration_d += D.get_duration();
 
-        long distance_db = DD.requete(s, t);
-        duration_db += DD.get_duration();
+        long distance_db = D.requete_bi(s, t);
+        duration_db += D.get_duration();
         if (distance_db!= distance_ref && distance_ref < LONG_MAX/3){
             cerr << " Erreur Dijkstra bidirectionnel : " << s << "-->" << t << endl;
             cerr << "\t Ref : " << distance_ref << " | DD : " << distance_db << endl;
@@ -46,8 +44,8 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt){
             asg ++;
         }
 
-        long distance_asgbd = Asgbd.requete(s, t);
-        duration_asgbd += Asgbd.get_duration();
+        long distance_asgbd = Asg.requete_bi(s, t);
+        duration_asgbd += Asg.get_duration();
         if (distance_asgbd != distance_ref && distance_ref < LONG_MAX/3){
             cerr << " Erreur A* geographique bidirectionnel : " << s << "-->" << t << endl;
             cerr << "\t Ref : " << distance_ref << "| A*G BD : " << distance_asgbd << endl;

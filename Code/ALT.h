@@ -9,7 +9,8 @@ public:
 
 public:
     ALT(Graphe *g):AStar(g){}
-    long d(long u, long v){return subDist[pp(u, v)];} // u ou v doit être un landmark
+    long d(long u, long v){return subDist[pp(u, v)];} // u doit être un landmark
+
     void preprocess(int n, bool verbose = false);
     void preprocess(string nomInput, bool verbose = false);
     void sauvegarde(string nomOutput, string instance, bool verbose = false);
