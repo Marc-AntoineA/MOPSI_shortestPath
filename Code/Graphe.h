@@ -23,7 +23,7 @@ public:
     long get_nA() const {return nA;}
 
     void show();
-    Sommet* get_sommet(int id) const;
+    Sommet* get_sommet(int id){return &V[id];}
     Graphe(string nomFichierSommets, string nomFichierPoids);
 };
 

@@ -16,6 +16,7 @@ public:
     Algorithme(Graphe* g);
     void begin(); // Pour mesurer le temps mis pour réaliser une requete :
     double end();
+    double now();
     double get_duration(){return duration;}
 
     virtual long requete(long s, long t, bool verbose = false)=0;

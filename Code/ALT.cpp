@@ -3,6 +3,7 @@
 #include <cmath>
 #include <fstream>
 #include "fonctionsDiverses.h"
+#include <ctime>
 
 long ALT::pi(long u, long t, long s){
     long M = 0; // borne maximale (ou son estimation)
@@ -15,23 +16,43 @@ long ALT::pi(long u, long t, long s){
 }
 
 void ALT::preprocess(int n, bool verbose){
-    begin();
-    if(verbose)
+
+    double time_begin = double(clock());
+    if(verbose){
         cout << "Pre-process en cours..." << endl;
+    }
     long ld;
+
     map<long, Sommet>::iterator it1;
     long u; long v;
-    for(int k = 0; k < n; k++){
+    long a_faire = 2*n * G->get_nV();
+    double faits = 0;
+    double prec = 0;
+    if(verbose){
+        cout << a_faire << " requetes a realiser " << endl;
+        cout << "0% : " << flush;
+    }
+
+    for(int k = 0; k < n; k++){// ABRUTI ! Faut pas faire ça du tout... mais utiliser un simple Dijkstra un vers tous :p
         ld = G->get_randomSommet();
         L.push_back(ld);
         for(it1 = V->begin(); it1 != V->end(); ++it1){
             u = ld;
             v = it1->second.get_id();
             subDist[pp(u, v)] = requete(u, v);
+            faits++;
             subDist[pp(v, u)] = requete(v, u);
+            faits++;
+            if(verbose && faits / a_faire - prec > 0.05){
+                prec = faits / a_faire;
+                cout << "=" << flush;
+            }
         }
+
+
     }
     if(verbose)
+        cout << " 100% : " << (double(clock()) - time_begin)/CLOCKS_PER_SEC << endl;
         cout << "\t \t... pre process termine. " << endl;
     end();
 }

@@ -12,16 +12,17 @@ from math import pi, asin, sin, cos
 #0/ Parametres
 
 #pour trouver la bounding_box : http://boundingbox.klokantech.com/
-bounding_box = (45.481318, 5.83374,45.636127, 6.060333,) # Chambéry
+bounding_box = (45.481318, 5.83374,45.636127, 6.060333) # Chambéry
+#inverser les coords comme pour Chy
 #bounding_box = (-9.5,35.9,46.8,60.0) #Europe
 #bounding_box = (-5.1,42.13,8.17,51.54) # France
 #bounding_box = (4.4385,45.0347,6.1414,45.9664) # Rhone alpes
 #bounding_box = (5.9559,47.5135,6.7017,47.8084) # test
-file_description = "Chambery"
-output_coords = "coords.co"
-output_distance = "distance.t"
+file_description = "Chambery_small"
+output_coords = "coordsGraphe.co"
+output_distance = "distancesGraphe.gr"
 roads = ["motorway", "trunk","primary", "secondary", "tertiary", "unclassified", "residential"]
-level = 7 # on execute la requete sur "motorway|motorway_link|trunk|trunk_link"
+level = 1 # on execute la requete sur "motorway|motorway_link|trunk|trunk_link"
 
 def requete_road():
     str = "'a"
@@ -37,7 +38,8 @@ def requete_road():
 api = overpy.Overpass(url="http://overpass-api.de/api/interpreter")
 #api = overpy.Overpass(url="http://127.0.0.1/api/interpreter")
 query = "[out:json];way['highway'~{}]{};node(w);out;way['highway'~{}]{};out;".format(requete_road(), bounding_box, requete_road(), bounding_box)
-print(query+)
+print(query)
+
 result = api.query(query)
 print(len(result.ways))
 # Forme du resultat
@@ -50,7 +52,7 @@ len(result.nodes)
 len(result.ways)
 #---------------------------------------------------------------
 #2/ On repere tout les noeuds qui apparaissent plusieurs fois
-ucounter = {}
+counter = {}
 
 for way in result.ways:
     way.get_nodes(resolve_missing=True) # pour télécharger les noeuds
@@ -63,7 +65,7 @@ for way in result.ways:
 #--------------------------------------------------------------
 #3/ On calcule la distance entre deux noeuds
 
-def grad(alpha): # deg to grad
+def deg_to_rad(alpha): # deg to radian
     return alpha*pi/180
 
 R = 6378000 # rayon de la Terre en m
@@ -71,8 +73,9 @@ R = 6378000 # rayon de la Terre en m
     Calcul de la distance entre deux points sur la Terre
 """
 def distance(node_1, node_2):
-    [lat1, lat2, lon1, lon2] = map(lambda x:grad(float(x)), [node_1.lat, node_2.lat, node_1.lon, node_2.lon])
+    [lat1, lat2, lon1, lon2] = map(lambda x:deg_to_rad(float(x)), [node_1.lat, node_2.lat, node_1.lon, node_2.lon])
     return R*(pi/2 - asin(sin(lat1)*sin(lat2) + cos(lon2 - lon1)*cos(lat1)*cos(lat2)))
+
 
 
 #---------------------------------------------------------------
@@ -104,15 +107,33 @@ for w in result.ways:
 
 #---------------------------------------------------------------
 #6/ On ecrit le fichier de coords
+
+
+current_id = 0
+newsId = {}
+for n in result.nodes:
+    newsId[n.id] = current_id
+    current_id += 1
+newsId
+for W in simplified_ways:
+    for k in range(len(W[0])):
+        W[0][k] = newsId[W[0][k]]
+simplified_ways[0]
+W=simplified_ways[0]
+W[0][2] = newsId[W[0][2]]
+W
+
 """
     Écriture au format 'v id long lat' où long et lat sont
     exprimes en entiers (= flottants à 8 décimales)
 """
 def node_to_string(node):
-    precision = 10**8
+    precision = 10**6
     lat = int(node.lat*precision)
     lon = int(node.lon*precision)
-    return "v {} {} {}".format(node.id, lat, lon)
+    return "v {} {} {}".format(newsId[node.id], lon, lat)
+
+
 
 f = open(output_coords, 'w')
 

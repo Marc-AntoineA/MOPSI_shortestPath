@@ -28,18 +28,16 @@ void Sommet::add_arcM(Arc a){
     deltaM.push_back(a.get_id());
 }
 double to_grad(int alpha){
-    return(alpha/10^6)*M_PI/180;
+    return (alpha*M_PI/180)/(pow(10, 6));
 }
 
-const int R = 636.6000; // rayon de la terre
+
+const double R = 6378000; // rayon de la terre
 long Sommet::distance(Sommet &v){
-    pair<int, int> vCoords = v.get_coords();
-    // *.99 pour être sur d'etre inférieur à la distance réelle
-    return .99*(2*R*asin(sqrt(sin((to_grad(coords.second)-to_grad(vCoords.second))/2)
-                         *sin((to_grad(coords.second)-to_grad(vCoords.second))/2)
-                           + cos(to_grad(coords.second))*cos(to_grad(vCoords.second))
-                           * sin((to_grad(coords.first) - to_grad(vCoords.first))/2)
-                           * sin((to_grad(coords.first) - to_grad(vCoords.first))/2))));
+    pair<int, int> vCoords = v.get_coords();// longitude / latitude
+    return .99*R*(M_PI/2 - asin(sin(to_grad(coords.second))*sin(to_grad(vCoords.second))
+                               + cos(to_grad(coords.first) - to_grad(vCoords.first))
+                               * cos(to_grad(coords.second))* cos(to_grad(vCoords.second))));
 
 }
 

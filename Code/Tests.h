@@ -3,5 +3,6 @@
 #include "Graphe.h"
 #include "Chemin.h"
 #include "AStar.h"
+#include "ALT.h"
 
-void test_requete(Graphe& G);
+void test_requete(Graphe& G, int nb_tests, string pp_alt);

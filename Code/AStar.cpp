@@ -109,7 +109,7 @@ long AStarBidirectionnel::requete(long s, long t, bool verbose){
             cout << "Duration : " << get_duration() << endl;
 
         }
-        return distanceForward[t];// normalement jamais atteint
+        return distanceForward[t];
     }
     else{
         end();

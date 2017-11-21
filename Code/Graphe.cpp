@@ -40,7 +40,6 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
                 int y;
                 from_string(string(ligne, k, k2 - k), y);
                 k = k2 + 1;
-
                 pair<int, int> coords(x, y);
                 Sommet s(id, coords);
                 V[id] = s;
@@ -56,6 +55,7 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
     ifstream fichierArcs(nomFichierPoids.c_str());
     if (fichierArcs.is_open()){
         string ligne;
+        int current_id = 0;
         while(getline(fichierArcs, ligne)){
             if (ligne.size()> 0 && string(ligne, 0, 1) == "a"){
                 size_t k = 2;
@@ -76,8 +76,9 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
                 from_string(string(ligne, k, k2 - k), w);
                 k = k2 + 1;
 
-                // Ici un seul arc entre deux mêmes sommets. On bricole un identifiant
-                long id = u*nV + v;
+                // Ici un seul arc entre deux mêmes sommets. On bricole un identifiant Impossible !
+                long id = current_id;
+                current_id ++;
                 Arc a(id, u, v, w);
                 A[id] = a;
 
