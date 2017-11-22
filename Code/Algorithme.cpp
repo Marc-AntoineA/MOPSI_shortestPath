@@ -12,7 +12,13 @@ Algorithme::Algorithme(Graphe* g){
 
 void Algorithme::begin(){
     timer = double(clock())/CLOCKS_PER_SEC;
+    visites = 0;
 }
+
+void Algorithme::add_visite(){
+    visites ++;
+}
+
 double Algorithme::now(){
     return double(clock())/CLOCKS_PER_SEC - timer;
 }

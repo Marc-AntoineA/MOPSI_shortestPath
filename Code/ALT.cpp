@@ -9,7 +9,10 @@ long ALT::pi(long u, long t, long s){
     long M = 0; // borne maximale (ou son estimation)
     int n = L.size();
     for(int ld = 0; ld < n; ld++){
-        M = max(M, d(ld, t)-d(ld, u));
+        M = max(M, - d(L[ld], t) + d(L[ld], u));
+        if (d(L[ld], t) - d(L[ld], u) > M){
+            M = d(L[ld], t) - d(L[ld], u);
+        }
     }
     return M;
 }
@@ -33,8 +36,9 @@ void ALT::preprocess(int n, bool verbose){
 
         F.push(pp(0, s));
         while(!F.empty()){
-            depileEmpile(F, distanceForward, F.top().second, s);// pas genant car le potentiel sera toujours nul a ce moment la
+            depileEmpile(F, distanceForward, F.top().second, s);
         }
+
         // On stocke les distances
         map<long, Sommet>::iterator it1;
         for(it1 = V->begin(); it1 != V->end(); it1++){

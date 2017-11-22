@@ -26,9 +26,15 @@ int main()
 
     ALT Alt(&G);
 
-    Alt.preprocess(5, true);
-    Alt.sauvegarde(root + instance + "output5.pp", instance);
-    test_requete(G, 15, root + instance + "output5.pp");
+    //Alt.preprocess(5, true);
+    //Alt.sauvegarde(root + instance + "output5.pp", instance);
+    Alt.preprocess(root + instance + "output5.pp", true);
+    cout << Alt.d(1, 1532) << endl;
+    Alt.requete(1532, 1);
+    cout << Alt.get_visites() << endl;
+    //Alt.requete(1, 2, true);
+    //Alt.requete(1, 160652, true);
+    test_requete(G, 5, root + instance + "output5.pp");
 
 
     return 0;

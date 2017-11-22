@@ -52,6 +52,7 @@ long AStar::requete(long s, long t, bool verbose){
     while(!F.empty() && !stop){
         if(F.top().second == t)
             stop = true;
+        add_visite();
         depileEmpile(F, distanceForward, t);
     }
     end();
@@ -89,12 +90,13 @@ long AStar::requete_bi(long s, long t, bool verbose){
                 cout << "Duration : " << get_duration() << endl;
             return mu;
         }
+        add_visite();
         depileEmpile(Forward, distanceForward, t);
         if (distanceBackward[u] + distanceForward[u] < mu){
             mu = distanceBackward[u] + distanceForward[u];
             point_commun = u;
         }
-
+        add_visite();
         depileEmpile(Backward, distanceBackward, s, true);
         if(distanceBackward[v] + distanceForward[v] < mu){
             mu = distanceBackward[v] + distanceForward[v];
