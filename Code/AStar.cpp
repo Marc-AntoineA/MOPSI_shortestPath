@@ -1,4 +1,5 @@
 #include "AStar.h"
+#include <climits>
 #include <queue>
 
 void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t, long s, bool reverse){
@@ -28,19 +29,20 @@ void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, 
     }
 }
 
-
 void AStar::init_distanceForward(long value){
     map<long, Sommet>::iterator it1;
     for(it1 = V->begin(); it1 != V->end(); ++it1){
         distanceForward[it1->second.get_id()] = value;
     }
 }
+
 void AStar::init_distanceBackward(long value){
     map<long, Sommet>::iterator it1;
     for(it1 = V->begin(); it1 != V->end(); ++it1){
         distanceBackward[it1->second.get_id()] = value;
     }
 }
+
 long AStar::requete(long s, long t, bool verbose){
     begin();
     priority_queue<pp, vector<pp>, priorite> F;

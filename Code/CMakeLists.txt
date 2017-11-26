@@ -11,5 +11,6 @@ add_executable(ProjetMOPSI main.cpp
                             Chemin.h Chemin.cpp
                             Tests.h Tests.cpp
                             AStar.h AStar.cpp
-                            ALT.h ALT.cpp)
+                            ALT.h ALT.cpp
+                            ArcFlags.h ArcFlags.cpp)
 

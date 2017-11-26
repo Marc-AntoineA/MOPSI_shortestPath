@@ -1,7 +1,8 @@
 #include "ALT.h"
-#include "Dijkstra.h" // pour le préprocess
+#include "Dijkstra.h" // pour le preprocess
 #include <cmath>
 #include <fstream>
+#include <climits>
 #include "fonctionsDiverses.h"
 #include <ctime>
 
@@ -9,9 +10,9 @@ long ALT::pi(long u, long t, long s){
     long M = 0; // borne maximale (ou son estimation)
     int n = L.size();
     for(int ld = 0; ld < n; ld++){
-        M = max(M, - d(L[ld], t) + d(L[ld], u));
-        if (d(L[ld], t) - d(L[ld], u) > M){
-            M = d(L[ld], t) - d(L[ld], u);
+        M = max(M, - d(L[ld], t) + d(L[ld], u)); //
+        if (d(L[ld], t) - d(L[ld], u) > M){      //meme chose que ds le document "review ..." ?
+            M = d(L[ld], t) - d(L[ld], u);       //
         }
     }
     return M;
