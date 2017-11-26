@@ -25,21 +25,22 @@ int main()
     cout << "\t \t ... Graphe lu" << endl;
 
 
-    ALT Alt(&G);
+    //ALT Alt(&G);
 
     //Alt.preprocess(5, true);
     //Alt.sauvegarde(root + instance + "output5.pp", instance);
-    Alt.preprocess(root + instance + "output5.pp", true);
-    cout << Alt.d(1, 1532) << endl;
-    cout << Alt.requete(1532, 1) << endl;
-    cout << Alt.get_visites() << endl;
+    //Alt.preprocess(root + instance + "output5.pp", true);//
+    //cout << Alt.d(1, 1532) << endl;
+    //cout << Alt.requete(1532, 1) << endl;//
+    //cout << Alt.get_visites() << endl;//
     //Alt.requete(1, 2, true);
     //Alt.requete(1, 160652, true);
-    //test_requete(G, 100, root + instance + "output5.pp");//
-    //test_modif(G, 100);
-    ArcFlags AG (&G);
-    AG.preprocess_quadrillage(4, true);
-    //cout<<AG.requete(1530, 1)<<endl;
+
+//    ArcFlags AF (&G);
+//    AF.preprocess_quadrillage(4);
+//    cout<<AF.requete(1532, 1, true)<<endl;
+
+    test_requete(G, 10, root + instance + "output5.pp");
 
 
     return 0;
