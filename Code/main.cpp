@@ -6,15 +6,16 @@
 #include "Graphe.h"
 #include "Chemin.h"
 #include "ALT.h"
+#include "ArcFlags.h"
 #include <string>
 
 using namespace std;
 
 
 int main()
-{
-    //string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
-    string root = "d:/Users/User/Documents/3-Formation/6 - semestre_3/MOPSI - Projet RO/MOPSI_ShortestPath/MOPSI_shortestPath/Code/Instance/";
+{//priority_queue<triplet, vector<triplet>, priorite2> F;F.push(triplet(pp(1,1),1));return 0;
+    string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
+    //string root = "d:/Users/User/Documents/3-Formation/6 - semestre_3/MOPSI - Projet RO/MOPSI_ShortestPath/MOPSI_shortestPath/Code/Instance/";
 
     string instance = "NewYork/";
     string sommets = root + instance + "coordsGraphe.co";
@@ -30,11 +31,15 @@ int main()
     //Alt.sauvegarde(root + instance + "output5.pp", instance);
     Alt.preprocess(root + instance + "output5.pp", true);
     cout << Alt.d(1, 1532) << endl;
-    Alt.requete(1532, 1);
+    cout << Alt.requete(1532, 1) << endl;
     cout << Alt.get_visites() << endl;
     //Alt.requete(1, 2, true);
     //Alt.requete(1, 160652, true);
-    test_requete(G, 5, root + instance + "output5.pp");
+    //test_requete(G, 100, root + instance + "output5.pp");//
+    //test_modif(G, 100);
+    ArcFlags AG (&G);
+    AG.preprocess_quadrillage(4, true);
+    //cout<<AG.requete(1530, 1)<<endl;
 
 
     return 0;
