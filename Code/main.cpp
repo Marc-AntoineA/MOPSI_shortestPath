@@ -37,8 +37,10 @@ int main()
     //Alt.requete(1, 160652, true);
 
 //    ArcFlags AF (&G);
-//    AF.preprocess_quadrillage(4);
-//    cout<<AF.requete(1532, 1, true)<<endl;
+//    AF.preprocess_quadrillage(4, true);
+//    //cout<<AF.requete(1532, 1, true)<<endl;
+//    AF.montrer_repartition();
+//    AF.test_preprocess();
 
     test_requete(G, 10, root + instance + "output5.pp");
 

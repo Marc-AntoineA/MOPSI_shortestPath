@@ -4,20 +4,20 @@
 void test_requete(Graphe &G, int nb_tests, string pp_alt){
     cout << "test_requete en cours..."<< endl;
 
-    // Durées
+    // Durees
     double duration_d = 0;
     double duration_db = 0;
     double duration_asg = 0;
     double duration_asgbd = 0;
     double duration_alt = 0;
-    //double duration_af = 0;
+    double duration_af = 0;
 
-    // Nombre de fois que l'algo a des résultats exacts (réf = Dijkstra)
+    // Nombre de fois que l'algo a des resultats exacts (ref = Dijkstra)
     int db = 0;
     int asg = 0;
     int asgbd = 0;
     int alt = 0;
-    //int af = 0;
+    int af = 0;
 
     // Nombre de points visites
     long visites_d = 0;
@@ -25,14 +25,14 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt){
     long visites_asg = 0;
     long visites_asgbd = 0;
     long visites_alt = 0;
-    //long visites_af = 0;
+    long visites_af = 0;
 
     Dijkstra D(&G);
     ASG Asg(&G);
     ALT Alt(&G);
     Alt.preprocess(pp_alt);
-    //ArcFlags AF (&G);
-    //AF.preprocess_quadrillage(4);
+//    ArcFlags AF (&G);
+//    AF.preprocess_quadrillage(4);
 
     for(int k = 0; k < nb_tests; k++){
         long s = G.get_randomSommet();

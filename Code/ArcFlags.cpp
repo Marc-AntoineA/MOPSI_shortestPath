@@ -2,7 +2,7 @@
 #include <climits>
 
 
-void ArcFlags::empileInitFlags(priority_queue<triplet, vector<triplet>, priorite2> *F, map<long, long>& dist, long u){
+void ArcFlags::empileInitFlags(priority_queue<triplet, vector<triplet>, priorite2> &F, map<long, long>& dist, long u){
     vector<long>* deltaM;
     deltaM = ((*V)[u]).get_deltaM();
     for(int j = 0; j < deltaM->size(); j++){
@@ -10,7 +10,7 @@ void ArcFlags::empileInitFlags(priority_queue<triplet, vector<triplet>, priorite
         long v = a->get_u();
         if(dist[v] > dist[u] + a->get_poids()){
             dist[v] = dist[u] + a->get_poids();
-            F->push(triplet(pp(dist[v],v),a->get_id()));
+            F.push(triplet(pp(dist[v],v),a->get_id()));
         }
     }
 }
@@ -39,72 +39,71 @@ void ArcFlags::initialisationFlags(bool verbose){
 
     vector<vector<long> > frontieres(K);
     vector<long>* deltaM;
-    bool stop;
+    bool b1, b2;
     for(int k=0; k<K;k++){
         for(int i=0; i < Cells[k].size(); i++){
             deltaM = ((*V)[Cells[k][i]]).get_deltaM();
-            stop=false;
-            for(int j=0; !stop && (j < deltaM->size()); j++){
+            b1=false;
+            b2=false;
+            for(int j=0; j < deltaM->size(); j++){
                 Arc* a = &((*A)[(*deltaM)[j]]);
-                Flags[pair<long, int>(a->get_id(), k)]=1;                        //tant qu'on y est, on peut initialiser les "k-flags" des aretes interieures au cell
+                Flags[pair<long, int>(a->get_id(), k)]=1;                        //Ici on initialise les "k-flags" des aretes interieures au cell
                 long v = a->get_u();
                 if (affectationCells[v]!=k){
-                    frontieres[k].push_back(Cells[k][i]);
-                    stop=true;
+                    b1=true;                          //il est sur la frontiere car relie a qq qui n'est pas ds le cell k
                 }
+                else{
+                    b2=true;                          // il est relie a qq du cell k (ceux qui ne le sont pas ne sont pas inclus a la frontiere)
+                }
+                if (b1 && b2)
+                    frontieres[k].push_back(Cells[k][i]);
             }
         }
     }
 
-    //enfin on fait une recherche backward de plus court chemin avec les sommets frontieres du cell C.
+    //enfin on fait une recherche backward de plus court chemin avec chaque sommet de la frontiere du cell C.
     //chaque fois qu'on depile un sommet de la file de priorite, l'arc via lequel on a ajoute le sommet
     //est sur un plus court chemin vers un sommet de C donc on le "flag" : Flags[a, C]=1
     map<long, int> visite;                           //il est essentiel de retenir quels sommets ont deja ete visites pour ne pas les depiler plusieurs fois
     priority_queue<triplet, vector<triplet>, priorite2> F;
     long u;
-    for (int k=0; k<K;k++){
-        //F.push(triplet(pp(1,1),1));
-        for(it1 = V->begin(); it1 != V->end(); ++it1){
-            visite[it1->second.get_id()] = 0;
-        }
-        init_distanceBackward(LONG_MAX);
-        for (int i=0; i<Cells[k].size();i++){
-            u = Cells[k][i];
-            distanceBackward[u] = 0;
-        }
+    for (int k=0;k<K;k++){
         for (int i=0; i<frontieres[k].size();i++){
-            u = frontieres[k][i];
-            empileInitFlags(&F, distanceBackward, u);
-        }
-
-        while(!F.empty()){
-            u = F.top().first.second;
-            if (visite[u]){
-                F.pop();
-                continue;
+            for(it1 = V->begin(); it1 != V->end(); ++it1){
+                visite[it1->second.get_id()] = 0;
             }
-            visite[u]=1;
-            Flags[pair<long, int>(F.top().second, k)]=1;
-            F.pop();
-            empileInitFlags(&F, distanceBackward, u);
-        }
+            init_distanceBackward(LONG_MAX);
 
+            u = frontieres[k][i];
+            distanceBackward[u] = 0;
+            empileInitFlags(F, distanceBackward, u);
+
+            while(!F.empty()){
+                u = F.top().first.second;
+                if (visite[u]){
+                    F.pop();
+                    continue;
+                }
+                visite[u]=1;
+                Flags[pair<long, int>(F.top().second, k)]=1;
+                F.pop();
+                empileInitFlags(F, distanceBackward, u);
+            }
+
+            int compteur = 0;
+            for(it1 = V->begin(); it1 != V->end(); ++it1){
+                if(!visite[it1->first] && it1->first != frontieres[k][i])
+                    compteur+=1;
+            }
+            if (compteur >0)
+                cerr <<"Dans ArcFlags::InitialisationFlags, " << compteur <<" sommets n'ont pas ete visites pour le cell " << k << endl;
+        }
         if (verbose)
             cout<<"cell "<< k <<" fini"<<endl;
-
-        int compteur = 0;
-        for(it1 = V->begin(); it1 != V->end(); ++it1){
-            if(!visite[it1->first] && getCell(it1->first) != k)
-                compteur+=1;
-        }
-        if (compteur >0)
-            cerr <<"Dans ArcFlags::InitialisationFlags, " << compteur <<" sommets n'ont pas ete visites pour le cell " << k << endl;
     }
     if (verbose){
         cout<<"flags initialised"<<endl;
     }
-
-
 }
 
 void ArcFlags::preprocess_quadrillage(int racineK, bool verbose){            //j'ai fait comme si les coordonnees
@@ -153,6 +152,36 @@ void ArcFlags::preprocess_k_means(int k, bool verbose){
     //utiliser l'algo de k-means avec les distances geographiques. chercher dans la std ?
 }
 
+void ArcFlags::test_preprocess(){
+    vector <long> compteurs (K, 0);
+    map<long, Sommet>::iterator it1;
+    bool b;           //true s'il existe dans delta+ des aretes avec flag k=1
+    for(it1 = V->begin(); it1 != V->end(); ++it1){
+        long u = it1->first;
+        for (int k=0;k<K;k++){
+            vector<long>* deltaP;
+            deltaP = ((*V)[u]).get_deltaP();
+            bool b = false;         //true s'il existe dans delta+(u) des aretes avec flag k=1
+            for(int j = 0; j < deltaP->size() && !b; j++){
+                Arc* a = &((*A)[(*deltaP)[j]]);
+                if (Flags[pair<long, int> (a->get_id(), k)])
+                    b=true;
+            }
+            if (!b)
+                compteurs[k]+=1;
+            if (!b && getCell(u)==k)
+                cerr<<"Il y a un sommet du cell "<<k<<" qui n'est relie a aucune arete menant a ce cell"<<endl;
+        }
+    }
+    for (int k=0; k<K; k++){
+        if (compteurs[k]>0){
+            cerr<<"Il y a "<<compteurs[k]<<" sommets n'etant relies a aucune arete menant vers le cell "<<k<<endl;
+        }
+    }
+
+
+}
+
 void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t, long s, bool reverse){
     long u = F.top().second;
     F.pop();
@@ -180,6 +209,18 @@ void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<lon
                 F.push(pp(dist[v], v));
             }
         }
+    }
+}
+
+void ArcFlags::montrer_repartition(){
+    vector<vector<long> > Cells(K);
+    map<long, Sommet>::iterator it1;
+    vector<int> compteurs(K, 0);
+    for(it1 = V->begin(); it1 != V->end(); ++it1){
+        compteurs[getCell(it1->first)]+=1;
+    }
+    for (int k=0;k<K;k++){
+        cout<<"Le cell "<<k<<" contient "<<compteurs[k]<<" sommets"<<endl;
     }
 }
 
