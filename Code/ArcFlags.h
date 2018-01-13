@@ -13,10 +13,13 @@ struct priorite2{
 class ArcFlags: public Dijkstra {
      int K;                 //nombre de cells
      int current_cell;      //cell du t de la requete courante
+     vector<vector<long> > frontieres;
      map <long, int> affectationCells;     //pour un sommet du ieme cell, Cells[idSommet]=i
      map <pair<long, int>, int> Flags;     //pour chaque arc a, Flags[(a, current_cell)]=1 s'il existe un plus court chemin vers un sommet de C passant par a
 public:
      ArcFlags (Graphe* g):Dijkstra(g){}
+     void initCellsQuadrillage(int racineK, bool verbose=false);
+     void initFrontieres(bool verbose=false);
      void preprocess_quadrillage(int racineK, bool verbose=false);
      void preprocess_k_means(int k, bool verbose=false);
      void empileInitFlags(priority_queue<pair<pair<long, long>, long>, vector<pair<pair<long, long>, long> >, priorite2> &F, map<long, long>& dist, long u);

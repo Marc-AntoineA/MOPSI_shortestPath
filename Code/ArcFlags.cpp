@@ -14,19 +14,47 @@ void ArcFlags::empileInitFlags(priority_queue<triplet, vector<triplet>, priorite
         }
     }
 }
-
-void ArcFlags::initialisationFlags(bool verbose){
-    //initialiser Flags[a, C]=0 pour tout arc a, cell C
-    //d'abord, on regroupe dans des vector les sommets de chaque cell
-
-    if (verbose){
-        cout<<"initialising flags"<<endl;
+//on initialise les cells pour quadrillage
+void ArcFlags::initCellsQuadrillage(int racineK, bool verbose){
+    if (verbose) cout<<"debut initCells"<<endl;
+    K=racineK*racineK;
+    int x_min=INT_MAX;
+    int x_max=INT_MIN;
+    int y_min=INT_MAX;
+    int y_max=INT_MIN;
+    pair <int, int> coords;
+    map<long, Sommet>::iterator it1;
+    for(it1 = V->begin(); it1 != V->end(); ++it1){
+        coords = it1->second.get_coords();
+        if (coords.first<x_min)
+            x_min=coords.first;
+        if (coords.second<y_min)
+            y_min=coords.second;
+        if (coords.first>x_max)
+            x_max=coords.first;
+        if (coords.second>y_max)
+            y_max=coords.second;
     }
+
+    int division_verticale = (y_max-y_min)/racineK+1;
+    int division_horizontale = (x_max-x_min)/racineK+1;
+    for(it1 = V->begin(); it1 != V->end(); ++it1){
+        coords=it1->second.get_coords();
+        affectationCells[it1->first] = racineK*((coords.first-x_min)/division_horizontale) + (coords.second-y_min)/division_verticale;
+    }
+    if (verbose) cout<<"fin initCells"<<endl;
+}
+
+//on identifie les frontieres
+void ArcFlags::initFrontieres(bool verbose){
+    if (verbose) cout<<"starting initFrontieres"<<endl;
+    if (verbose) cout<<"starting assembling cells"<<endl;
     vector<vector<long> > Cells(K);
     map<long, Sommet>::iterator it1;
     for(it1 = V->begin(); it1 != V->end(); ++it1){
         Cells[getCell(it1->first)].push_back(it1->first);
     }
+    if (verbose) cout<<"assembling cells done"<<endl;
 
     for (int k=0; k<K;k++){
         map<long, Arc>::iterator it2;
@@ -35,9 +63,7 @@ void ArcFlags::initialisationFlags(bool verbose){
         }
     }
 
-    //puis on recherche les frontieres de chaque cell
-
-    vector<vector<long> > frontieres(K);
+    frontieres = vector<vector<long> >(K);
     vector<long>* deltaM;
     bool b1, b2;
     for(int k=0; k<K;k++){
@@ -47,27 +73,49 @@ void ArcFlags::initialisationFlags(bool verbose){
             b2=false;
             for(int j=0; j < deltaM->size(); j++){
                 Arc* a = &((*A)[(*deltaM)[j]]);
-                Flags[pair<long, int>(a->get_id(), k)]=1;                        //Ici on initialise les "k-flags" des aretes interieures au cell
+                Flags[pair<long, int>(a->get_id(), k)]=1;      //Ici on initialise les "k-flags" des aretes les plus proches
                 long v = a->get_u();
                 if (affectationCells[v]!=k){
                     b1=true;                          //il est sur la frontiere car relie a qq qui n'est pas ds le cell k
                 }
                 else{
-                    b2=true;                          // il est relie a qq du cell k (ceux qui ne le sont pas ne sont pas inclus a la frontiere)
+                    b2=true;
+                    // il est relie a qq du cell k (ceux qui ne le sont pas ne sont pas inclus a la frontiere, ce sont des points isoles)
+                    // il faudra se debrouiller pour avoir in fine des cells connexes par arcs quand meme
+                    // les requetes sur points isoles ne vont pas trop marcher
                 }
                 if (b1 && b2)
                     frontieres[k].push_back(Cells[k][i]);
             }
         }
     }
+    if (verbose) cout<<"initFrontieres done"<<endl;
+}
 
-    //enfin on fait une recherche backward de plus court chemin avec chaque sommet de la frontiere du cell C.
+//initialiser Flags[a, C]=0 pour tout arc a, cell C
+void ArcFlags::initialisationFlags(bool verbose){
+    if (verbose){
+        cout<<"initialising flags"<<endl;
+    }
+
+    //on initialise tous les flags a 0
+    for (int k=0; k<K;k++){
+        map<long, Arc>::iterator it2;
+        for(it2 = A->begin(); it2 != A->end(); ++it2){
+            Flags[pair<long, int>(it2->first, k)]=0;
+        }
+    }
+    map<long, Sommet>::iterator it1;
+
+    //on fait une recherche backward de plus court chemin avec chaque sommet de la frontiere du cell C.
     //chaque fois qu'on depile un sommet de la file de priorite, l'arc via lequel on a ajoute le sommet
     //est sur un plus court chemin vers un sommet de C donc on le "flag" : Flags[a, C]=1
-    map<long, int> visite;                           //il est essentiel de retenir quels sommets ont deja ete visites pour ne pas les depiler plusieurs fois
+    //il est indispensable de retenir quels sommets ont deja ete visites pour ne pas les depiler plusieurs fois
+    map<long, int> visite;
     priority_queue<triplet, vector<triplet>, priorite2> F;
     long u;
     for (int k=0;k<K;k++){
+        int avancement=0;
         for (int i=0; i<frontieres[k].size();i++){
             for(it1 = V->begin(); it1 != V->end(); ++it1){
                 visite[it1->second.get_id()] = 0;
@@ -97,9 +145,10 @@ void ArcFlags::initialisationFlags(bool verbose){
             }
             if (compteur >0)
                 cerr <<"Dans ArcFlags::InitialisationFlags, " << compteur <<" sommets n'ont pas ete visites pour le cell " << k << endl;
+            if (verbose) cout<<"cell ["<<k<<"] traite a "<<100*float(avancement)/frontieres[k].size()<<"%"<<endl;
+            avancement++;
         }
-        if (verbose)
-            cout<<"cell "<< k <<" fini"<<endl;
+        if (verbose) cout<<"cell "<< k <<" fini"<<endl;
     }
     if (verbose){
         cout<<"flags initialised"<<endl;
@@ -111,41 +160,20 @@ void ArcFlags::preprocess_quadrillage(int racineK, bool verbose){            //j
         cout<<"debut preprocess avec quadrillage"<<endl;                   //mais j'ai pas teste et je sais pas si
     }                                                                     //c'est une approximation raisonnable
     begin();
-    K=racineK*racineK;
-    int x_min=INT_MAX;
-    int x_max=INT_MIN;
-    int y_min=INT_MAX;
-    int y_max=INT_MIN;
-    pair <int, int> coords;
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        coords = it1->second.get_coords();
-        if (coords.first<x_min)
-            x_min=coords.first;
-        if (coords.second<y_min)
-            y_min=coords.second;
-        if (coords.first>x_max)
-            x_max=coords.first;
-        if (coords.second>y_max)
-            y_max=coords.second;
-    }
-
-    int division_verticale = (y_max-y_min)/racineK+1;
-    int division_horizontale = (x_max-x_min)/racineK+1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        coords=it1->second.get_coords();
-        affectationCells[it1->first] = racineK*((coords.first-x_min)/division_horizontale) + (coords.second-y_min)/division_verticale;
-    }
+    initCellsQuadrillage(racineK, verbose);
+    initFrontieres(verbose);
     initialisationFlags(verbose);
     end();
     if (verbose){
         cout<<"fin preprocess avec quadrillage"<<endl;
         cout << "Duration : " << get_duration() << endl;
     }
+    map<long, Sommet>::iterator it1;
     for(it1 = V->begin(); it1 != V->end(); ++it1){
         if((getCell(it1->first))>=K)
             cerr <<"dans ArcFlags::preprocess_quadrillage, erreur d'affectation de sommet' : " << getCell(it1->first) << " > " << K << endl;
     }
+    if (verbose) cout<<"fin preprocess avec quadrillage"<<endl;
 }
 
 void ArcFlags::preprocess_k_means(int k, bool verbose){
@@ -213,14 +241,14 @@ void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<lon
 }
 
 void ArcFlags::montrer_repartition(){
-    vector<vector<long> > Cells(K);
+    initFrontieres();
     map<long, Sommet>::iterator it1;
     vector<int> compteurs(K, 0);
     for(it1 = V->begin(); it1 != V->end(); ++it1){
         compteurs[getCell(it1->first)]+=1;
     }
     for (int k=0;k<K;k++){
-        cout<<"Le cell "<<k<<" contient "<<compteurs[k]<<" sommets"<<endl;
+        cout<<"Le cell "<<k<<" contient "<<compteurs[k]<<" sommets, dont "<<frontieres[k].size()<<" sommets frontaliers."<<endl;
     }
 }
 

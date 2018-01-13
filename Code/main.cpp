@@ -36,13 +36,16 @@ int main()
     //Alt.requete(1, 2, true);
     //Alt.requete(1, 160652, true);
 
-//    ArcFlags AF (&G);
-//    AF.preprocess_quadrillage(4, true);
+    ArcFlags AF (&G);
+    AF.preprocess_quadrillage(4, true);
+    //AF.initCellsQuadrillage(4, true);
+    //AF.initFrontieres(true);
+    //AF.montrer_repartition();
 //    //cout<<AF.requete(1532, 1, true)<<endl;
 //    AF.montrer_repartition();
 //    AF.test_preprocess();
 
-    test_requete(G, 10, root + instance + "output5.pp");
+    //test_requete(G, 10, root + instance + "output5.pp");
 
 
     return 0;
