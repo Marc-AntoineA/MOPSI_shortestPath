@@ -13,4 +13,7 @@ add_executable(ProjetMOPSI main.cpp
                             AStar.h AStar.cpp
                             ALT.h ALT.cpp
                             ArcFlags.h ArcFlags.cpp)
-
+#https://stackoverflow.com/questions/1620918/cmake-and-libpthread
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(ProjetMOPSI Threads::Threads)

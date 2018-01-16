@@ -12,6 +12,7 @@
 using namespace std;
 
 
+
 int main()
 {//priority_queue<triplet, vector<triplet>, priorite2> F;F.push(triplet(pp(1,1),1));return 0;
     string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
@@ -38,15 +39,16 @@ int main()
 
     ArcFlags AF (&G);
     AF.preprocess_quadrillage(4, true);
+    cout<<"ok"<<endl;
+    AF.sauvegarde(root + instance + "outputAF1.pp", instance, true);
     //AF.initCellsQuadrillage(4, true);
     //AF.initFrontieres(true);
     //AF.montrer_repartition();
-//    //cout<<AF.requete(1532, 1, true)<<endl;
-//    AF.montrer_repartition();
-//    AF.test_preprocess();
+    cout<<AF.requete(1532, 1, true)<<endl;
 
     //test_requete(G, 10, root + instance + "output5.pp");
 
 
     return 0;
 }
+
