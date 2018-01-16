@@ -114,7 +114,13 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
     map<long, Sommet>::iterator it1;
     priority_queue<triplet, vector<triplet>, priorite2> F;
     long u;
+    //on ne travaille pas avec distanceBackward car les threads se marcheraient dessus
     map<long, long> customDistanceBackward;
+    int nbSommetsFrontieresTotal=0;
+    for (int k=k1; k<k2;k++){
+        nbSommetsFrontieresTotal+=frontieres[k].size();
+    }
+    int nbSommetsFrontieresTraites=0;
     for (int k=k1;k<k2;k++){
         int avancement=1;
         for (int i=0; i<frontieres[k].size();i++){
@@ -144,9 +150,10 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
             }
             if (compteur >0)
                 cerr <<"Dans ArcFlags::InitialisationFlags, " << compteur <<" sommets n'ont pas ete visites pour le cell " << k << endl;
-            if (verbose) cout<<"cell ["<<k<<"] traite a "<<100*float(avancement)/frontieres[k].size()<<"%"<<endl;
+            if (verbose) cout<<"avancement du thread : "<<100*float(avancement+nbSommetsFrontieresTraites )/nbSommetsFrontieresTotal<<"%"<<endl;
             avancement++;
         }
+        nbSommetsFrontieresTraites+=avancement;
         if (verbose) cout<<"cell "<< k <<" fini"<<endl;
     }
     if (verbose){
@@ -412,7 +419,7 @@ void ArcFlags::sauvegarde(string nomOutput, string instance, bool verbose){
         output << "c Format pour le nombre de cells : k <K> "<< endl;
         output << "c Format pour les affectations de sommets : a <id> <cell nb>" << endl;
         output << "c Format pour les flags : f <id> <f1> <f2> ... <fK>" << endl;
-
+        output << "k " << K <<endl;
 
         map<long, Sommet>::iterator it1;
         for(it1 = V->begin(); it1 != V->end(); ++it1){
@@ -423,8 +430,9 @@ void ArcFlags::sauvegarde(string nomOutput, string instance, bool verbose){
         for(it2 = A->begin(); it2 != A->end(); ++it2){
             output << "f " << it2->first;
             for (int k=0; k<K;k++){
-                output << " " << Flags[pair<long, int>(it2->first, k)]<<endl;
+                output << " " << Flags[pair<long, int>(it2->first, k)];
             }
+            output << endl;
         }
     }else{
         cerr << "AF::sauvegarde | Le fichier : "

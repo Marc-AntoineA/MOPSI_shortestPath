@@ -27,27 +27,26 @@ int main()
 
 
     //ALT Alt(&G);
-
+    ///Dijkstra D(&G);
     //Alt.preprocess(5, true);
     //Alt.sauvegarde(root + instance + "output5.pp", instance);
-    //Alt.preprocess(root + instance + "output5.pp", true);//
+    ///Alt.preprocess(root + instance + "output5.pp", true);//
     //cout << Alt.d(1, 1532) << endl;
     //cout << Alt.requete(1532, 1) << endl;//
     //cout << Alt.get_visites() << endl;//
     //Alt.requete(1, 2, true);
     //Alt.requete(1, 160652, true);
 
-    ArcFlags AF (&G);
-    AF.preprocess_quadrillage(4, true);
-    cout<<"ok"<<endl;
-    AF.sauvegarde(root + instance + "outputAF1.pp", instance, true);
+    ///ArcFlags AF (&G);
+    ///AF.preprocess(root + instance + "outputAF1.pp", true);
+    //AF.sauvegarde(root + instance + "outputAF1.pp", instance, true);
     //AF.initCellsQuadrillage(4, true);
     //AF.initFrontieres(true);
     //AF.montrer_repartition();
-    cout<<AF.requete(1532, 1, true)<<endl;
+    ///cout<<D.requete(1532, 1, true)<<endl;
+    ///cout<<AF.requete(1532, 1, true)<<endl;
 
-    //test_requete(G, 10, root + instance + "output5.pp");
-
+    test_requete(G, 10, root + instance + "output5.pp", root + instance + "outputAF1.pp");
 
     return 0;
 }
