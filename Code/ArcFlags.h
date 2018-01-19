@@ -41,6 +41,8 @@ public:
 };
 
 struct thread_data{
+    int K;
+    bool* doneCells;
     int k1;
     int k2;
     bool verbose;

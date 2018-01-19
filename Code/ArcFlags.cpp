@@ -3,6 +3,7 @@
 #include <climits>
 #include "fonctionsDiverses.h"
 #include <pthread.h>
+#include <cstdlib>
 
 
 ArcFlags::ArcFlags (Graphe* g):Dijkstra(g){
@@ -150,7 +151,7 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
             }
             if (compteur >0)
                 cerr <<"Dans ArcFlags::InitialisationFlags, " << compteur <<" sommets n'ont pas ete visites pour le cell " << k << endl;
-            if (verbose) cout<<"avancement du thread : "<<100*float(avancement+nbSommetsFrontieresTraites )/nbSommetsFrontieresTotal<<"%"<<endl;
+            if (verbose) cout<<"avancement du thread : "<<100*float(avancement+nbSommetsFrontieresTraites )/nbSommetsFrontieresTotal<<"%. Cell "<< k <<endl;
             avancement++;
         }
         nbSommetsFrontieresTraites+=avancement;
@@ -165,7 +166,13 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
 void* preprocessWithThreading(void *threadarg){
     struct thread_data *my_data;
     my_data = (struct thread_data *) threadarg;
-    my_data->AF->initialisationFlags(my_data->k1, my_data->k2, my_data->verbose);
+    //my_data->AF->initialisationFlags(my_data->k1, my_data->k2, my_data->verbose);
+    for (int i=0;i<my_data->K;i++){
+        if (!my_data->doneCells[i]){
+            my_data->doneCells[i]=true;
+            my_data->AF->initialisationFlags(i, i+1, true);
+        }
+    }
     cout<<"AF : destroying frame"<<endl;
     pthread_exit(NULL);
 }
@@ -180,17 +187,23 @@ void ArcFlags::preprocess_quadrillage(int racineK, bool verbose){            //j
     int threadsNb=4;
     pthread_t threads[threadsNb];
     struct thread_data td[threadsNb];
+    bool* done = new bool [K];
+    for (int j=0;j<K;j++){
+        done[j]=false;
+    }
     for(int i = 0; i < threadsNb; i++ ){
         cout << "AF : creating thread, " << i << endl;
-        td[i].k1 = i*K/threadsNb;
-        td[i].k2 = (i!=threadsNb) ? (i+1)*K/threadsNb : K;
+        td[i].K=K;
+        td[i].doneCells=done;
+        //td[i].k1 = i*K/threadsNb;
+        //td[i].k2 = (i!=threadsNb) ? (i+1)*K/threadsNb : K;
         td[i].verbose=verbose;
         td[i].AF=this;
         pthread_create(&threads[i], NULL, preprocessWithThreading, (void *)&td[i]);
     }
     for(int i = 0; i < threadsNb; i++ )
         pthread_join(threads[i], NULL);
-    //initialisationFlags(0, K, verbose);
+    delete [] done;
     end();
     if (verbose){
         cout<<"fin preprocess avec quadrillage"<<endl;
