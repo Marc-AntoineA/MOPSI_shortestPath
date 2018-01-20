@@ -296,7 +296,7 @@ long ArcFlags::requete(long s, long t, bool verbose){
     current_cell=affectationCells[t];                       //on le definit une fois pour toutes
     priority_queue<pp, vector<pp>, priorite> F;
 
-    init_distanceForward(LONG_MAX);
+    init_distanceForward();
     distanceForward[s] = 0;
     F.push(pp(0, s));
     bool stop = false;
@@ -321,8 +321,8 @@ long ArcFlags::requete_bi(long s, long t, bool verbose){
     current_cell=affectationCells[t];
     priority_queue<pp, vector<pp>, priorite> Forward;
     priority_queue<pp, vector<pp>, priorite> Backward;
-    init_distanceForward(LONG_MAX/3);
-    init_distanceBackward(LONG_MAX/3);
+    init_distanceForward();
+    init_distanceBackward();
 
     distanceForward[s] = 0;
     distanceBackward[t] = 0;

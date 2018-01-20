@@ -2,6 +2,16 @@
 #include <climits>
 #include <queue>
 
+AStar::AStar(Graphe* g):Algorithme(g){
+    map<long, Sommet>::iterator it1, end;
+    long value=LONG_MAX/3;
+    end=V->end();
+    for(it1 = V->begin(); it1 != end; ++it1){
+        distanceForward0[it1->second.get_id()] = value;
+        distanceBackward0[it1->second.get_id()] = value;
+    }
+}
+
 void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t, long s, bool reverse){
     long u = F.top().second;
     F.pop();
@@ -29,25 +39,23 @@ void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, 
     }
 }
 
-void AStar::init_distanceForward(long value){
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        distanceForward[it1->second.get_id()] = value;
-    }
+void AStar::init_distanceForward(){
+    distanceForward=distanceForward0;
 }
 
-void AStar::init_distanceBackward(long value){
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        distanceBackward[it1->second.get_id()] = value;
-    }
+void AStar::init_distanceBackward(){
+    distanceBackward=distanceBackward0;
 }
 
 long AStar::requete(long s, long t, bool verbose){
     begin();
     priority_queue<pp, vector<pp>, priorite> F;
+    init_distanceForward();/*
+    end();
+    if(verbose)
+        cout << "Duration : " << get_duration() << endl;
+    begin();*/
 
-    init_distanceForward(LONG_MAX);
     distanceForward[s] = 0;
     F.push(pp(0, s));
     bool stop = false;
@@ -73,8 +81,8 @@ long AStar::requete_bi(long s, long t, bool verbose){
     begin();
     priority_queue<pp, vector<pp>, priorite> Forward;
     priority_queue<pp, vector<pp>, priorite> Backward;
-    init_distanceForward(LONG_MAX/3);
-    init_distanceBackward(LONG_MAX/3);
+    init_distanceForward();
+    init_distanceBackward();
 
     distanceForward[s] = 0;
     distanceBackward[t] = 0;

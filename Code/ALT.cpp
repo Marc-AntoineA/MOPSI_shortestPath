@@ -32,7 +32,7 @@ void ALT::preprocess(int n, bool verbose){
         L.push_back(s);
 
         priority_queue<pp, vector<pp>, priorite> F;
-        init_distanceForward(LONG_MAX);
+        init_distanceForward();
         distanceForward[s] = 0;
 
         F.push(pp(0, s));

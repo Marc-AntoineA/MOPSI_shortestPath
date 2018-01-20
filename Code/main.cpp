@@ -41,10 +41,10 @@ int main()
     //AF.preprocess(root + instance + "outputAF2.pp", true);
     //AF.preprocess_quadrillage(5, true);
     //AF.sauvegarde(root + instance + "outputAF2.pp", instance, true);
-    ///cout<<D.requete(1532, 1, true)<<endl;
+    ///cout<<D.requete(1564, 79615, true)<<endl;//1532, 1
     ///cout<<AF.requete(1532, 1, true)<<endl;
 
-    test_requete(G, 10, root + instance + "output5.pp", root + instance + "outputAF2.pp");
+    test_requete(G, 100, root + instance + "output5.pp", root + instance + "outputAF2.pp");
 
     return 0;
 }
