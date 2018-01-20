@@ -37,14 +37,14 @@ int main()
     //Alt.requete(1, 2, true);
     //Alt.requete(1, 160652, true);
 
-    ArcFlags AF (&G);
-    //AF.preprocess(root + instance + "outputAF1.pp", true);
-    AF.preprocess_quadrillage(5, true);
-    AF.sauvegarde(root + instance + "outputAF2.pp", instance, true);
+    //ArcFlags AF (&G);
+    //AF.preprocess(root + instance + "outputAF2.pp", true);
+    //AF.preprocess_quadrillage(5, true);
+    //AF.sauvegarde(root + instance + "outputAF2.pp", instance, true);
     ///cout<<D.requete(1532, 1, true)<<endl;
     ///cout<<AF.requete(1532, 1, true)<<endl;
 
-    //test_requete(G, 100, root + instance + "output5.pp", root + instance + "outputAF1.pp");
+    test_requete(G, 10, root + instance + "output5.pp", root + instance + "outputAF2.pp");
 
     return 0;
 }
