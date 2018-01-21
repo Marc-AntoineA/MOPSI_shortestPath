@@ -23,8 +23,14 @@ protected:
 
 public:
     virtual long pi(long u, long t, long s)=0;
+<<<<<<< fbc9e09d9d7f086c4cd78ebcf5ecfecbf5b0472a
     AStar(Graphe* g);
     void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t = 0, long s = 0, bool reverse = false);
+=======
+    AStar(Graphe* g):Algorithme(g){}
+    void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, 
+        map<long, long>& dist, long t = 0, long s = 0, bool reverse = false);
+>>>>>>> 'Correction' du bug de Alt...
     virtual long requete(long s, long t, bool verbose = false);
     virtual long requete_bi(long s, long t, bool verbose = false);
 

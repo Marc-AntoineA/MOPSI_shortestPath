@@ -2,6 +2,7 @@
 #include <climits>
 #include <queue>
 
+<<<<<<< fbc9e09d9d7f086c4cd78ebcf5ecfecbf5b0472a
 AStar::AStar(Graphe* g):Algorithme(g){
     map<long, Sommet>::iterator it1, end;
     long value=LONG_MAX/3;
@@ -13,7 +14,12 @@ AStar::AStar(Graphe* g):Algorithme(g){
 }
 
 void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t, long s, bool reverse){
+=======
+void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F,
+ map<long, long>& dist, long t, long s, bool reverse){
+>>>>>>> 'Correction' du bug de Alt...
     long u = F.top().second;
+    long p = F.top().first;
     F.pop();
     vector<long>* deltaP;
     if(reverse)
@@ -23,18 +29,15 @@ void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, 
 
     for(int k = 0; k < deltaP->size(); k++){
         Arc* a = &((*A)[(*deltaP)[k]]);
+        long v;
         if(!reverse){
-            long v = a->get_v();
-            if(dist[v] > dist[u] + a->get_poids()){
-                dist[v] = dist[u] + a->get_poids();
-                F.push(pp(dist[v] + pi(v, t, s), v));
-            }
+            v = a->get_v();
         }else{
-            long v = a->get_u();
-            if(dist[v] > dist[u] + a->get_poids()){
-                dist[v] = dist[u] + a->get_poids();
-                F.push(pp(dist[v] + pi(v, t, s), v));
-            }
+            v = a->get_u();
+        }
+        if(dist[v] > dist[u] + a->get_poids()){
+            dist[v] = dist[u] + a->get_poids();
+            F.push(pp(dist[v] + pi(v, t, s), v));
         }
     }
 }
@@ -58,12 +61,20 @@ long AStar::requete(long s, long t, bool verbose){
 
     distanceForward[s] = 0;
     F.push(pp(0, s));
+    
     bool stop = false;
     while(!F.empty() && !stop){
-        if(F.top().second == t)
+        long u = F.top().second;
+        if(distanceForward[u] < distanceForward[t]){
+            add_visite();
+            //cout << u << "\t" << distanceForward[u] << "\t" << distanceForward[t] << endl;
+            depileEmpile(F, distanceForward, t);
+        }else{
+            F.pop();
+        }
+        if(u == t){
             stop = true;
-        add_visite();
-        depileEmpile(F, distanceForward, t);
+        }
     }
     end();
     if(verbose)
