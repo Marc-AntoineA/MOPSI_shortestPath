@@ -14,13 +14,13 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
     srand (time(NULL));
     // Initialisations
     nV = 0; nA = 0;
-    V = map<long, Sommet>();
-    A = map<long, Arc>();
 
     // Ajout des sommets
     ifstream fichierSommets(nomFichierSommets.c_str());
     if (fichierSommets.is_open()){
         string ligne;
+        long id_apriori=1;
+        V.push_back(Sommet(0, pair<int, int>(0, 0)));
         while(getline(fichierSommets, ligne)){
             if (ligne.size()> 0 && string(ligne, 0, 1) == "v"){
                 size_t k = 2;
@@ -42,8 +42,11 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
                 k = k2 + 1;
                 pair<int, int> coords(x, y);
                 Sommet s(id, coords);
-                V[id] = s;
+                V.push_back(s);
+                //V[id] = s;
                 nV++;
+                if (id!=id_apriori) cerr<<"construction : sommets mal indexes, on a trouve "<<id<<" alors qu'on s'attendait a "<<id_apriori<<endl;
+                id_apriori++;
             }
         }
 
@@ -80,10 +83,11 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
                 long id = current_id;
                 current_id ++;
                 Arc a(id, u, v, w);
-                A[id] = a;
+                A.push_back(a);
 
                 V[u].add_arcP(a);
                 V[v].add_arcM(a);
+                nA++;
             }
         }
 
@@ -95,20 +99,15 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
 
 
 void Graphe::show(){
-    map<long, Sommet>::iterator it1;
-    for(it1 = V.begin(); it1 != V.end(); ++it1){
-        cout << it1->second <<endl;
+    for (int i=1; i<nV+1;i++){
+        cout << V[i] << endl;
     }
-
-    map<long, Arc>::iterator it;
-    for(it = A.begin(); it != A.end(); ++it){
-        cout << it->second <<endl;
+    for (int i=1; i<nA+1;i++){
+        cout << A[i] << endl;
     }
 }
 
 
 long Graphe::get_randomSommet(){
-    map<long, Sommet>::iterator it = V.begin();
-    advance(it, rand()%V.size());
-    return it->first;
+    return rand()%V.size();
 }

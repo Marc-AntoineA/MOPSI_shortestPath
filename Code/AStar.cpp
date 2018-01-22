@@ -2,22 +2,17 @@
 #include <climits>
 #include <queue>
 
-<<<<<<< fbc9e09d9d7f086c4cd78ebcf5ecfecbf5b0472a
 AStar::AStar(Graphe* g):Algorithme(g){
-    map<long, Sommet>::iterator it1, end;
     long value=LONG_MAX/3;
-    end=V->end();
-    for(it1 = V->begin(); it1 != end; ++it1){
-        distanceForward0[it1->second.get_id()] = value;
-        distanceBackward0[it1->second.get_id()] = value;
+    distanceBackward0.push_back(value);
+    distanceForward0.push_back(value);
+    for (int i=1;i<get_V()->size();i++){
+        distanceBackward0.push_back(value);
+        distanceForward0.push_back(value);
     }
 }
 
-void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t, long s, bool reverse){
-=======
-void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F,
- map<long, long>& dist, long t, long s, bool reverse){
->>>>>>> 'Correction' du bug de Alt...
+void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, vector<long> &dist, long t, long s, bool reverse){
     long u = F.top().second;
     long p = F.top().first;
     F.pop();

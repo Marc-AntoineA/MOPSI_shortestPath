@@ -30,7 +30,7 @@ double Algorithme::end(){
 }
 
 //distance contient les distances a s calculees par Dijkstra
-Chemin Algorithme::reconstitution_chemin_forward(long s, long t, map<long, long> *distance) const{
+Chemin Algorithme::reconstitution_chemin_forward(long s, long t, vector<long> *distance) const{
     long sommet_courant = t;
     Chemin C;
     C.push_back(sommet_courant);
@@ -61,7 +61,7 @@ Chemin Algorithme::reconstitution_chemin_forward(long s, long t, map<long, long>
 }
 
 //distance contient les distances a t calculees par Dijkstra
-Chemin Algorithme::reconstitution_chemin_backward(long s, long t, map<long, long> *distance) const{
+Chemin Algorithme::reconstitution_chemin_backward(long s, long t, vector<long> *distance) const{
     long sommet_courant = s;
     Chemin C;
     C.push_back(sommet_courant);

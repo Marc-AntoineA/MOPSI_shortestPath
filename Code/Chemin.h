@@ -14,6 +14,6 @@ public:
     void inversion();   //inverser le sens du chemin
     Chemin join(Chemin C);
     string chaine() const;
-    double longueur(map<long, Arc> *A, map<long, Sommet>* V) const;
+    double longueur(vector<Arc> *A, vector<Sommet>* V) const;
 };
 ostream& operator<<(ostream&str,const Chemin &C);

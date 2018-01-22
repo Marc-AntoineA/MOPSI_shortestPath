@@ -46,7 +46,7 @@ Chemin Chemin::join(Chemin C){
     return result;
 }
 
-double Chemin::longueur(map<long, Arc> *A, map<long, Sommet>* V) const{
+double Chemin::longueur(vector<Arc> *A, vector<Sommet> *V) const{
     long uCourant, vCourant;
     double result = 0;
     bool trouve;

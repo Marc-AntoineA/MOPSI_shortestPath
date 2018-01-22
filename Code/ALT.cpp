@@ -40,9 +40,7 @@ void ALT::preprocess(int n, bool verbose){
         }
 
         // On stocke les distances
-        map<long, Sommet>::iterator it1;
-        for(it1 = V->begin(); it1 != V->end(); it1++){
-            v = it1->first;
+        for(long v=1;v<get_V()->size();v++){
             subDist[pp(s, v)] = distanceForward[v];
         }
 
@@ -116,12 +114,10 @@ void ALT::sauvegarde(string nomOutput, string instance, bool verbose){
             output << "l " << L[k] << endl;
         }
 
-        long u; long v;
-        map<long, Sommet>::iterator it1;
+        long u;
         for(int k = 0; k < n; k++){
             u = L[k];
-            for(it1 = V->begin(); it1 != V->end(); it1++){
-                v = it1->second.get_id();
+            for(long v=1;v<get_V()->size();v++){
                 output << "d " << u << " " << v << " " << d(u, v) << endl;
             }
         }

@@ -88,7 +88,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
         if (distance_af != distance_ref && distance_ref < LONG_MAX/3){
             cerr << " Erreur AF: " << s << "-->" << t << endl;
             cerr << "\t Ref : " << distance_ref << "| AF : " << distance_af << endl;
-            cerr << "\t Cell de la requete : " << AF.getCell(t) << endl;
+            cerr << "cell de la requete : " << AF.getCell(t) << endl;
         }else{
             af++;
         }

@@ -10,15 +10,15 @@ using namespace std;
 
 class Graphe{
 private:
-    map<long, Sommet> V;
-    map<long, Arc> A;
+    vector<Sommet> V;
+    vector<Arc> A;
     long nV, nA;    // Nombre de sommets et nombre d'arcs
 
 
 public:
-    map<long, Sommet>* get_sommets(){return &V;}
+    vector<Sommet>* get_sommets(){return &V;}
     long get_randomSommet();
-    map<long, Arc>* get_arcs(){return &A;}
+    vector<Arc>* get_arcs(){return &A;}
     long get_nV() const {return nV;}
     long get_nA() const {return nA;}
 
@@ -26,7 +26,3 @@ public:
     Sommet* get_sommet(int id){return &V[id];}
     Graphe(string nomFichierSommets, string nomFichierPoids);
 };
-
-
-
-

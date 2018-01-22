@@ -6,17 +6,18 @@
 #include <cstdlib>
 
 
-ArcFlags::ArcFlags (Graphe* g):Dijkstra(g){
-    //on initialise tous les flags a 0
+void ArcFlags::initFlagsFalse(){
+    //on initialise tous les flags a false
     for (int k=0; k<K;k++){
-        map<long, Arc>::iterator it2;
-        for(it2 = A->begin(); it2 != A->end(); ++it2){
-            Flags[pair<long, int>(it2->first, k)]=0;
+        vector<bool> temp;
+        for(long a=0;a<get_A()->size();a++){
+            temp.push_back(false);
         }
+        Flags.push_back(temp);
     }
 }
 
-void ArcFlags::empileInitFlags(priority_queue<triplet, vector<triplet>, priorite2> &F, map<long, long>& dist, long u){
+void ArcFlags::empileInitFlags(priority_queue<triplet, vector<triplet>, priorite2> &F, vector<long> &dist, long u){
     vector<long>* deltaM;
     deltaM = ((*V)[u]).get_deltaM();
     for(int j = 0; j < deltaM->size(); j++){
@@ -38,9 +39,8 @@ void ArcFlags::initCellsQuadrillage(int racineK, bool verbose){
     int y_min=INT_MAX;
     int y_max=INT_MIN;
     pair <int, int> coords;
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        coords = it1->second.get_coords();
+    for(long v=1;v<V->size();v++){
+        coords = ((*V)[v]).get_coords();
         if (coords.first<x_min)
             x_min=coords.first;
         if (coords.second<y_min)
@@ -53,9 +53,9 @@ void ArcFlags::initCellsQuadrillage(int racineK, bool verbose){
 
     int division_verticale = (y_max-y_min)/racineK+1;
     int division_horizontale = (x_max-x_min)/racineK+1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        coords=it1->second.get_coords();
-        affectationCells[it1->first] = racineK*((coords.first-x_min)/division_horizontale) + (coords.second-y_min)/division_verticale;
+    for(long v=1;v<V->size();v++){
+        coords=((*V)[v]).get_coords();
+        affectationCells[v] = racineK*((coords.first-x_min)/division_horizontale) + (coords.second-y_min)/division_verticale;
     }
     if (verbose) cout<<"fin initCells"<<endl;
 }
@@ -66,16 +66,14 @@ void ArcFlags::initFrontieres(bool verbose){
     if (verbose) cout<<"starting initFrontieres"<<endl;
     if (verbose) cout<<"starting assembling cells"<<endl;
     vector<vector<long> > Cells(K);
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        Cells[getCell(it1->first)].push_back(it1->first);
+    for(long v=1;v<V->size();v++){
+        Cells[getCell(v)].push_back(v);
     }
     if (verbose) cout<<"assembling cells done"<<endl;
 
     for (int k=0; k<K;k++){
-        map<long, Arc>::iterator it2;
-        for(it2 = A->begin(); it2 != A->end(); ++it2){
-            Flags[pair<long, int>(it2->first, k)]=0;
+        for(long a=0;a<A->size();a++){
+            Flags[k][a]=false;
         }
     }
 
@@ -88,7 +86,7 @@ void ArcFlags::initFrontieres(bool verbose){
             b1=false;
             for(int j=0; j < deltaM->size(); j++){
                 Arc* a = &((*A)[(*deltaM)[j]]);
-                Flags[pair<long, int>(a->get_id(), k)]=1;      //Ici on initialise les "k-flags" des aretes les plus proches
+                Flags[k][a->get_id()]=true;      //Ici on initialise les "k-flags" des aretes les plus proches
                 long v = a->get_u();
                 if (affectationCells[v]!=k){
                     b1=true;                          //il est sur la frontiere car relie a qq qui n'est pas ds le cell k
@@ -112,11 +110,11 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
     //est sur un plus court chemin vers un sommet de C donc on le "flag" : Flags[a, C]=1
     //il est indispensable de retenir quels sommets ont deja ete visites pour ne pas les depiler plusieurs fois
     map<long, int> visite;
-    map<long, Sommet>::iterator it1;
     priority_queue<triplet, vector<triplet>, priorite2> F;
     long u;
     //on ne travaille pas avec distanceBackward car les threads se marcheraient dessus
-    map<long, long> customDistanceBackward;
+    vector<long> customDistanceBackward;
+    customDistanceBackward.push_back(0);
     int nbSommetsFrontieresTotal=0;
     for (int k=k1; k<k2;k++){
         nbSommetsFrontieresTotal+=frontieres[k].size();
@@ -125,9 +123,9 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
     for (int k=k1;k<k2;k++){
         int avancement=1;
         for (int i=0; i<frontieres[k].size();i++){
-            for(it1 = V->begin(); it1 != V->end(); ++it1){
-                visite[it1->second.get_id()] = 0;
-                customDistanceBackward[it1->second.get_id()] = LONG_MAX;
+            for(long v=1;v<V->size();v++){
+                visite[v] = 0;
+                customDistanceBackward.push_back(LONG_MAX);
             }
             u = frontieres[k][i];
             customDistanceBackward[u] = 0;
@@ -139,14 +137,14 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
                     continue;
                 }
                 visite[u]=1;
-                Flags[pair<long, int>(F.top().second, k)]=1;
+                Flags[k][F.top().second]=true;
                 F.pop();
                 empileInitFlags(F, customDistanceBackward, u);
             }
 
             int compteur = 0;
-            for(it1 = V->begin(); it1 != V->end(); ++it1){
-                if(!visite[it1->first] && it1->first != frontieres[k][i])
+            for(long v=1; v<V->size();v++){
+                if(!visite[v] && v != frontieres[k][i])
                     compteur+=1;
             }
             if (compteur >0)
@@ -209,10 +207,9 @@ void ArcFlags::preprocess_quadrillage(int racineK, bool verbose){            //j
         cout<<"fin preprocess avec quadrillage"<<endl;
         cout << "Duration : " << get_duration() << endl;
     }
-    map<long, Sommet>::iterator it1;
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        if((getCell(it1->first))>=K)
-            cerr <<"dans ArcFlags::preprocess_quadrillage, erreur d'affectation de sommet' : " << getCell(it1->first) << " > " << K << endl;
+    for(long v=1;v<V->size();v++){
+        if((getCell(v))>=K)
+            cerr <<"dans ArcFlags::preprocess_quadrillage, erreur d'affectation de sommet' : " << getCell(v) << " > " << K << endl;
     }
     if (verbose) cout<<"fin preprocess avec quadrillage"<<endl;
 }
@@ -221,35 +218,7 @@ void ArcFlags::preprocess_k_means(int k, bool verbose){
     //utiliser l'algo de k-means avec les distances geographiques. chercher dans la std ?
 }
 
-//void ArcFlags::test_preprocess(){
-//    vector <long> compteurs (K, 0);
-//    map<long, Sommet>::iterator it1;
-//    bool b;
-//    for(it1 = V->begin(); it1 != V->end(); ++it1){
-//        long u = it1->first;
-//        for (int k=0;k<K;k++){
-//            vector<long>* deltaP;
-//            deltaP = ((*V)[u]).get_deltaP();
-//            bool b = false;         //true s'il existe dans delta+(u) des aretes avec flag k=1
-//            for(int j = 0; j < deltaP->size() && !b; j++){
-//                Arc* a = &((*A)[(*deltaP)[j]]);
-//                if (Flags[pair<long, int> (a->get_id(), k)])
-//                    b=true;
-//            }
-//            if (!b)
-//                compteurs[k]+=1;
-//            if (!b && getCell(u)==k)
-//                cerr<<"Il y a un sommet du cell "<<k<<" qui n'est relie a aucune arete menant a ce cell"<<endl;
-//        }
-//    }
-//    for (int k=0; k<K; k++){
-//        if (compteurs[k]>0){
-//            cerr<<"Il y a "<<compteurs[k]<<" sommets n'etant relies a aucune arete menant vers le cell "<<k<<endl;
-//        }
-//    }
-//}
-
-void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<long, long>& dist, long t, long s, bool reverse){
+void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, vector<long> &dist, long t, long s, bool reverse){
     long u = F.top().second;
     F.pop();
     vector<long>* deltaP;
@@ -260,8 +229,7 @@ void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<lon
 
     for(int k = 0; k < deltaP->size(); k++){
         Arc* a = &((*A)[(*deltaP)[k]]);
-        pair<long, int> z (a->get_id(), current_cell);
-        if (Flags[z] == 0)           //on ignore les arcs qui ne sont pas sur un plus court chemin menant a un sommet du current cell
+        if (!Flags[current_cell][a->get_id()])           //on ignore les arcs qui ne sont pas sur un plus court chemin menant a un sommet du current cell
             continue;
         if(!reverse){
             long v = a->get_v();
@@ -281,10 +249,9 @@ void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, map<lon
 
 void ArcFlags::montrer_repartition(){
     initFrontieres();
-    map<long, Sommet>::iterator it1;
     vector<int> compteurs(K, 0);
-    for(it1 = V->begin(); it1 != V->end(); ++it1){
-        compteurs[getCell(it1->first)]+=1;
+    for(long v=1;v<V->size();v++){
+        compteurs[getCell(v)]+=1;
     }
     for (int k=0;k<K;k++){
         cout<<"Le cell "<<k<<" contient "<<compteurs[k]<<" sommets, dont "<<frontieres[k].size()<<" sommets frontaliers."<<endl;
@@ -387,6 +354,7 @@ void ArcFlags::preprocess(string nomInput, bool verbose){
                 k = 2;
                 k2 = ligne.find(' ', k);
                 from_string(string(ligne, k, k2 - k), K);
+                initFlagsFalse();
             }
             if (ligne.size()> 0 && string(ligne, 0, 1) == "a"){
                 k = 2;
@@ -407,7 +375,10 @@ void ArcFlags::preprocess(string nomInput, bool verbose){
                     k2 = ligne.find(' ', k);
                     from_string(string(ligne, k, k2 - k), f);
                     k = k2 + 1;
-                    Flags[pair<long, int>(id, i)] = f;
+                    if (f==0)
+                        Flags[i][id] = false;
+                    else
+                        Flags[i][id] = true;
                 }
             }
         }
@@ -434,16 +405,17 @@ void ArcFlags::sauvegarde(string nomOutput, string instance, bool verbose){
         output << "c Format pour les flags : f <id> <f1> <f2> ... <fK>" << endl;
         output << "k " << K <<endl;
 
-        map<long, Sommet>::iterator it1;
-        for(it1 = V->begin(); it1 != V->end(); ++it1){
-            output << "a " << it1->first << " " << affectationCells[it1->first]<< endl;
+        for(long v=1;v<V->size();v++){
+            output << "a " << v << " " << affectationCells[v]<< endl;
         }
 
-        map<long, Arc>::iterator it2;
-        for(it2 = A->begin(); it2 != A->end(); ++it2){
-            output << "f " << it2->first;
+        for(long a=0;a<A->size();a++){
+            output << "f " << a;
             for (int k=0; k<K;k++){
-                output << " " << Flags[pair<long, int>(it2->first, k)];
+                if (Flags[k][a])
+                    output << " " << 1;
+                else
+                    output << " " << 0;
             }
             output << endl;
         }
