@@ -12,7 +12,8 @@ struct priorite2{
 
 class ArcFlags: public Dijkstra {
      int K;                 //nombre de cells
-     int current_cell;      //cell du t de la requete courante
+     int target_cell;      //cell du t de la requete courante
+     int start_cell;
      vector<vector<long> > frontieres;
      vector<int> affectationCells;     //pour un sommet du ieme cell, Cells[idSommet]=i
      //map <pair<long, int>, int> Flags;     //pour chaque arc a, Flags[(a, C)]=1 s'il existe un plus court chemin vers un sommet de C passant par a

@@ -15,7 +15,7 @@ using namespace std;
 
 int main()
 {//priority_queue<triplet, vector<triplet>, priorite2> F;F.push(triplet(pp(1,1),1));return 0;
-    string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code2/Instance/";
+    string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
     //string root = "d:/Users/User/Documents/3-Formation/6 - semestre_3/MOPSI - Projet RO/MOPSI_ShortestPath/MOPSI_shortestPath/Code/Instance/";
 
     string instance = "NewYork/";
@@ -37,11 +37,16 @@ int main()
     //Alt.requete(1, 160652, true);
 
     //ArcFlags AF (&G);
-    //AF.preprocess(root + instance + "outputAF3.pp", true);
+    //AF.preprocess(root + instance + "outputAF2.pp", true);
     //AF.preprocess_quadrillage(10, true);
-    //AF.sauvegarde(root + instance + "outputAF2.pp", instance, true);
-    //cout<<D.requete(15320, 208000/*183275*/, true)<<endl;
-    //cout<<AF.requete(15320, 208000/*183275*/, true)<<endl;
+    //AF.sauvegarde(root + instance + "outputAF3.pp", instance, true);
+    //cout<<D.requete(15320, 208000, true)<<endl;
+    //cout<<D.get_visites()<<endl;
+    //cout<<AF.requete(15320, 208000, true)<<endl;
+    //cout<<AF.requete_bi(15320, 208000, true)<<endl;
+
+    //ASG Asg(&G);
+    //cout<<Asg.requete_bi(129294, 254505, true)<<endl;
 
     test_requete(G, 100, root + instance + "output5.pp", root + instance + "outputAF3.pp");
 

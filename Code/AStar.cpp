@@ -14,23 +14,24 @@ AStar::AStar(Graphe* g):Algorithme(g){
 
 void AStar::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, vector<long> &dist, long t, long s, bool reverse){
     long u = F.top().second;
-    long p = F.top().first;
+    //long p = F.top().first;
     F.pop();
     vector<long>* deltaP;
     if(reverse)
         deltaP = ((*V)[u]).get_deltaM();
     else
         deltaP = ((*V)[u]).get_deltaP();
-
-    for(int k = 0; k < deltaP->size(); k++){
-        Arc* a = &((*A)[(*deltaP)[k]]);
-        long v;
+    int size=deltaP->size();
+    long v;
+    Arc* a;
+    for(int k = 0; k < size; k++){
+         a = &((*A)[(*deltaP)[k]]);
         if(!reverse){
             v = a->get_v();
         }else{
             v = a->get_u();
         }
-        if(dist[v] > dist[u] + a->get_poids()){
+        if(dist[v] > dist[u] + a->get_poids()){          //modif ici ?
             dist[v] = dist[u] + a->get_poids();
             F.push(pp(dist[v] + pi(v, t, s), v));
         }
@@ -83,6 +84,38 @@ pair<long, Chemin> AStar::chemin(long s, long t, bool verbose){
     return pair<long, Chemin> (distanceForward[t], reconstitution_chemin_forward(s,t, &distanceForward));
 }
 
+void AStar::BD_finish(priority_queue<pp, vector<pp>, priorite> Forward, priority_queue<pp, vector<pp>, priorite> Backward, long& mu){
+    long u, v;
+    vector<long> *deltaP, *deltaM;
+    Arc* a;
+    while(!Forward.empty()){
+        u = Forward.top().second;
+        Forward.pop();
+        deltaP = ((*V)[u]).get_deltaP();
+        for(int k = 0; k < deltaP->size(); k++){
+            a = &((*A)[(*deltaP)[k]]);
+            if (distanceBackward[a->get_v()]+distanceForward[u]+a->get_poids() < mu){
+                mu = distanceBackward[a->get_v()]+distanceForward[u]+a->get_poids();
+                point_commun = u;
+                distanceBackward[u] = distanceBackward[a->get_v()]+a->get_poids();
+            }
+        }
+    }
+    while(!Backward.empty()){
+        v = Backward.top().second;
+        Backward.pop();
+        deltaM = ((*V)[v]).get_deltaM();
+        for(int k = 0; k < deltaM->size(); k++){
+            a = &((*A)[(*deltaM)[k]]);
+            if (distanceForward[a->get_u()]+distanceBackward[v]+a->get_poids() < mu){
+                mu = distanceForward[a->get_u()]+distanceBackward[v]+a->get_poids();
+                point_commun = v;
+                distanceForward[u] = distanceForward[a->get_u()]+a->get_poids();
+            }
+        }
+    }
+}
+
 long AStar::requete_bi(long s, long t, bool verbose){
     begin();
     priority_queue<pp, vector<pp>, priorite> Forward;
@@ -96,15 +129,13 @@ long AStar::requete_bi(long s, long t, bool verbose){
     Forward.push(pp(0, s));
     Backward.push(pp(0, t));
     long mu = LONG_MAX;
-    while(!Forward.empty() && !Backward.empty()){
+    bool stop=false;
+    while(!Forward.empty() && !Backward.empty() && !stop){
 
         long u = Forward.top().second;
         long v = Backward.top().second;
         if(distanceForward[u] + distanceBackward[v] > mu){
-            end();
-            if(verbose)
-                cout << "Duration : " << get_duration() << endl;
-            return mu;
+            stop=true;
         }
         add_visite();
         depileEmpile(Forward, distanceForward, t);
@@ -113,13 +144,17 @@ long AStar::requete_bi(long s, long t, bool verbose){
             point_commun = u;
         }
         add_visite();
-        depileEmpile(Backward, distanceBackward, s, true);
+        depileEmpile(Backward, distanceBackward, s, t, true);
         if(distanceBackward[v] + distanceForward[v] < mu){
             mu = distanceBackward[v] + distanceForward[v];
             point_commun = v;
         }
     }
-
+    BD_finish(Forward, Backward, mu);
+    end();
+    if(verbose)
+        cout << "Duration : " << get_duration() << endl;
+    return mu;
     if(Forward.empty()){
         end();
         if(verbose){

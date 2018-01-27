@@ -17,6 +17,7 @@ private:
 
 public:
     vector<Sommet>* get_sommets(){return &V;}
+    long getReverseArc(const long &a);
     long get_randomSommet();
     vector<Arc>* get_arcs(){return &A;}
     long get_nV() const {return nV;}

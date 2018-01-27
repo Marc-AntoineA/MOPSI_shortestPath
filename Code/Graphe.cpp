@@ -96,7 +96,21 @@ Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
     else cout << "Impossible d'ouvrir le fichier : " << nomFichierPoids << endl;
 }
 
+//long Graphe::getReverseArc(const long &a){
+//    Arc ap = A[a];
+//    Arc b = A[a-1];
+//    if (b.get_u()==ap.get_v() && b.get_v()==ap.get_u())
+//        return a-1;
+//    else
+//        return a+1;
+//}
 
+long Graphe::getReverseArc(const long &a){
+    if (a%2)
+        return a-1;
+    else
+        return a+1;
+}
 
 void Graphe::show(){
     for (int i=1; i<nV+1;i++){
@@ -109,5 +123,5 @@ void Graphe::show(){
 
 
 long Graphe::get_randomSommet(){
-    return rand()%V.size();
+    return rand()%(V.size()-1)+1;
 }

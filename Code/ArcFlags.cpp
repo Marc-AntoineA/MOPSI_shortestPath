@@ -70,16 +70,18 @@ void ArcFlags::initFrontieres(bool verbose){
         Cells[getCell(v)].push_back(v);
     }
     if (verbose) cout<<"assembling cells done"<<endl;
-
+    Flags=vector<vector<bool> >(K);
     for (int k=0; k<K;k++){
+        Flags[k]=vector<bool>(A->size());
         for(long a=0;a<A->size();a++){
             Flags[k][a]=false;
         }
     }
-
+    cout<<"ok1"<<endl;
     frontieres = vector<vector<long> >(K);
     vector<long>* deltaM;
     bool b1;
+    cout<<"ok2"<<endl;
     for(int k=0; k<K;k++){
         for(int i=0; i < Cells[k].size(); i++){
             deltaM = ((*V)[Cells[k][i]]).get_deltaM();
@@ -109,11 +111,12 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
     //chaque fois qu'on depile un sommet de la file de priorite, l'arc via lequel on a ajoute le sommet
     //est sur un plus court chemin vers un sommet de C donc on le "flag" : Flags[a, C]=1
     //il est indispensable de retenir quels sommets ont deja ete visites pour ne pas les depiler plusieurs fois
-    map<long, int> visite;
+             //map<long, int> visite;
+    vector<bool> visite = vector<bool>(V->size());
     priority_queue<triplet, vector<triplet>, priorite2> F;
     long u;
     //on ne travaille pas avec distanceBackward car les threads se marcheraient dessus
-    vector<long> customDistanceBackward;
+    vector<long> customDistanceBackward = vector<long>(V->size());
     customDistanceBackward.push_back(0);
     int nbSommetsFrontieresTotal=0;
     for (int k=k1; k<k2;k++){
@@ -125,7 +128,7 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
         for (int i=0; i<frontieres[k].size();i++){
             for(long v=1;v<V->size();v++){
                 visite[v] = 0;
-                customDistanceBackward.push_back(LONG_MAX);
+                customDistanceBackward[v]=LONG_MAX;
             }
             u = frontieres[k][i];
             customDistanceBackward[u] = 0;
@@ -148,7 +151,7 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
                     compteur+=1;
             }
             if (compteur >0)
-                cerr <<"Dans ArcFlags::InitialisationFlags, " << compteur <<" sommets n'ont pas ete visites pour le cell " << k << endl;
+                cerr <<"Dans ArcFlags::InitialisationFlags, " << compteur <<" sommets n'ont pas ete visites pour un point frontiere du cell " << k << endl;
             if (verbose) cout<<"avancement du thread : "<<100*float(avancement+nbSommetsFrontieresTraites )/nbSommetsFrontieresTotal<<"%. Cell "<< k <<endl;
             avancement++;
         }
@@ -229,7 +232,9 @@ void ArcFlags::depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, vector<
 
     for(int k = 0; k < deltaP->size(); k++){
         Arc* a = &((*A)[(*deltaP)[k]]);
-        if (!Flags[current_cell][a->get_id()])           //on ignore les arcs qui ne sont pas sur un plus court chemin menant a un sommet du current cell
+        if (!reverse && !Flags[target_cell][a->get_id()])           //on ignore les arcs qui ne sont pas sur un plus court chemin menant a un sommet du cell de t
+            continue;
+        if (reverse && !Flags[start_cell][G->getReverseArc(a->get_id())])
             continue;
         if(!reverse){
             long v = a->get_v();
@@ -260,18 +265,19 @@ void ArcFlags::montrer_repartition(){
 
 long ArcFlags::requete(long s, long t, bool verbose){
     begin();
-    current_cell=affectationCells[t];                       //on le definit une fois pour toutes
+    target_cell=affectationCells[t];
+    start_cell=affectationCells[s];
     priority_queue<pp, vector<pp>, priorite> F;
 
-    init_distanceForward();
-    distanceForward[s] = 0;
+    init_distanceBackward();
+    distanceBackward[s] = 0;
     F.push(pp(0, s));
     bool stop = false;
     while(!F.empty() && !stop){
         if(F.top().second == t)
             stop = true;
         add_visite();
-        depileEmpile(F, distanceForward, t);
+        depileEmpile(F, distanceBackward);
     }
     if (F.empty()){
         cerr<<"F vide apres "<<get_visites()<<" visites"<<endl;
@@ -280,12 +286,13 @@ long ArcFlags::requete(long s, long t, bool verbose){
     if(verbose)
         cout << "Duration : " << get_duration() << endl;
 
-    return distanceForward[t];
+    return distanceBackward[t];
 }
 
 long ArcFlags::requete_bi(long s, long t, bool verbose){
     begin();
-    current_cell=affectationCells[t];
+    target_cell=affectationCells[t];
+    start_cell=affectationCells[s];
     priority_queue<pp, vector<pp>, priorite> Forward;
     priority_queue<pp, vector<pp>, priorite> Backward;
     init_distanceForward();
@@ -297,47 +304,34 @@ long ArcFlags::requete_bi(long s, long t, bool verbose){
     Forward.push(pp(0, s));
     Backward.push(pp(0, t));
     long mu = LONG_MAX;
-    while(!Forward.empty() && !Backward.empty()){
+    bool stop=false;
+    while(!Forward.empty() && !Backward.empty() && !stop){
 
         long u = Forward.top().second;
         long v = Backward.top().second;
         if(distanceForward[u] + distanceBackward[v] > mu){
-            end();
-            if(verbose)
-                cout << "Duration : " << get_duration() << endl;
-            return mu;
+             stop=true;
+            //return mu;
         }
         add_visite();
         depileEmpile(Forward, distanceForward, t);
+
         if (distanceBackward[u] + distanceForward[u] < mu){
             mu = distanceBackward[u] + distanceForward[u];
             point_commun = u;
         }
         add_visite();
-        depileEmpile(Backward, distanceBackward, s, true);
+        depileEmpile(Backward, distanceBackward, s, t, true);
         if(distanceBackward[v] + distanceForward[v] < mu){
             mu = distanceBackward[v] + distanceForward[v];
             point_commun = v;
         }
     }
-
-    if(Forward.empty()){
-        end();
-        if(verbose){
-            cout << "Forward empty " << endl;
-            cout << "Duration : " << get_duration() << endl;
-
-        }
-        return distanceForward[t];
-    }
-    else{
-        end();
-        if(verbose){
-            cout << "Backward empty " << endl;
-            cout << "Duration : " << get_duration() << endl;
-        }
-        return distanceBackward[s];
-   }
+    BD_finish(Forward, Backward, mu);
+    end();
+    if(verbose)
+        cout << "Duration : " << get_duration() << endl;
+    return mu;
 }
 
 void ArcFlags::preprocess(string nomInput, bool verbose){

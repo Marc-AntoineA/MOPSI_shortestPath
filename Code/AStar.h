@@ -26,6 +26,7 @@ public:
     AStar(Graphe* g);
     void depileEmpile(priority_queue<pp, vector<pp>, priorite>& F, vector<long>& dist, long t = 0, long s = 0, bool reverse = false);
     virtual long requete(long s, long t, bool verbose = false);
+    void BD_finish(priority_queue<pp, vector<pp>, priorite> Forward, priority_queue<pp, vector<pp>, priorite> Backward, long& mu);
     virtual long requete_bi(long s, long t, bool verbose = false);
 
     virtual pair<long, Chemin> chemin(long s, long t, bool verbose = false);

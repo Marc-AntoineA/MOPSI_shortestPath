@@ -11,6 +11,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     double duration_asgbd = 0;
     double duration_alt = 0;
     double duration_af = 0;
+    double duration_afbd = 0;
 
     // Nombre de fois que l'algo a des resultats exacts (ref = Dijkstra)
     int db = 0;
@@ -18,6 +19,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     int asgbd = 0;
     int alt = 0;
     int af = 0;
+    int afbd = 0;
 
     // Nombre de points visites
     long visites_d = 0;
@@ -26,6 +28,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     long visites_asgbd = 0;
     long visites_alt = 0;
     long visites_af = 0;
+    long visites_afbd = 0;
 
     Dijkstra D(&G);
     ASG Asg(&G);
@@ -92,6 +95,17 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
         }else{
             af++;
         }
+
+        long distance_afbd = AF.requete_bi(s, t);
+        duration_afbd += AF.get_duration();
+        visites_afbd += AF.get_visites();
+        if (distance_afbd != distance_ref && distance_ref < LONG_MAX/3){
+            cerr << " Erreur AF Bidirectionnel: " << s << "-->" << t << endl;
+            cerr << "\t Ref : " << distance_ref << "| AF BD : " << distance_afbd << endl;
+            cerr << "cells de la requete : " << AF.getCell(s) << " " << AF.getCell(t) << endl;
+        }else{
+            afbd++;
+        }
     }
 
     cout << " ...Resultats : " << endl;
@@ -100,6 +114,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     cout << " \t A* Geo Bidirectionnel  : " << asgbd << "/" << nb_tests << endl;
     cout << " \t ALT                    : " << alt << "/" << nb_tests << endl;
     cout << " \t AF                     : " << af << "/" << nb_tests << endl;
+    cout << " \t AF Bidirectionnel      : " << afbd << "/" << nb_tests << endl;
     cout << endl;
 
     cout << " ...Temps moyens (en sec)  : " << endl;
@@ -109,6 +124,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     cout << " \t A* Geo Bidirectionnel  : " << duration_asgbd/(double) nb_tests << endl;
     cout << " \t ALT                    : " << duration_alt/(double) nb_tests << endl;
     cout << " \t AF                     : " << duration_af/(double) nb_tests << endl;
+    cout << " \t AF Bidirectionnel      : " << duration_afbd/(double) nb_tests << endl;
     cout << endl;
 
     cout << " ...Espace visite moyen (en nombre de noeuds): " << endl;
@@ -118,6 +134,7 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     cout << " \t A* Geo Bidirectionnel  : " << visites_asgbd/(double) nb_tests << endl;
     cout << " \t ALT                    : " << visites_alt/(double) nb_tests << endl;
     cout << " \t AF                     : " << visites_af/(double) nb_tests << endl;
+    cout << " \t AF Bidirectionnel      : " << visites_afbd/(double) nb_tests << endl;
     cout << endl;
 
 }
