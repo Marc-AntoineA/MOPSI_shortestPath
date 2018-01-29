@@ -30,19 +30,20 @@ double Algorithme::end(){
 }
 
 //distance contient les distances a s calculees par Dijkstra
-Chemin Algorithme::reconstitution_chemin_forward(long s, long t, vector<long> *distance) const{
-    long sommet_courant = t;
+Chemin Algorithme::reconstitution_chemin_forward(int s, int t, vector<long> *distance) const{
+    int sommet_courant = t;
     Chemin C;
     C.push_back(sommet_courant);
     Arc* a;
-    long u;
+    int u;
     while (sommet_courant != s){
         bool trouve = false;
         //iteration sur u de delta- : si distance(sommet_courant)-distance(u)==poids(arc(u, sommet_courant)) alors sommet_courant=u et C.push_back(sommet_courant)
         //on suppose que tous les poids des arcs sont un peu differents, donc on peut remonter depuis t jusqu'a s avec seulement les distances
-        vector<long> *deltaM = ((*V)[sommet_courant]).get_deltaM();
-        for(int k = 0; (k < deltaM->size()) && !trouve; k++){
-            a = &((*A)[(*deltaM)[k]]);
+        int* deltaM = ((*V)[sommet_courant]).get_deltaM();
+        int size = ((*V)[sommet_courant]).get_nM();
+        for(int k = 0; (k < size) && !trouve; k++){
+            a = &((*A)[(deltaM)[k]]);
             u = a->get_u();
             if (pow((*distance)[sommet_courant] - (*distance)[u] - a->get_poids(),2) < 0.00001){//cout<<"distance a "<<s<<" de "<<sommet_courant<<" : "<<(*distance)[sommet_courant]<<" et distance de "<<a->get_u()<<" : "<<(*distance)[a->get_u()]<<" et abs = "<<abs((*distance)[sommet_courant] - (*distance)[a->get_u()] - a->get_poids())<<endl;compteur+=1;
                 sommet_courant=u;
@@ -61,19 +62,20 @@ Chemin Algorithme::reconstitution_chemin_forward(long s, long t, vector<long> *d
 }
 
 //distance contient les distances a t calculees par Dijkstra
-Chemin Algorithme::reconstitution_chemin_backward(long s, long t, vector<long> *distance) const{
-    long sommet_courant = s;
+Chemin Algorithme::reconstitution_chemin_backward(int s, int t, vector<long> *distance) const{
+    int sommet_courant = s;
     Chemin C;
     C.push_back(sommet_courant);
     Arc* a;
-    long v;
+    int v;
     while (sommet_courant != t){
         bool trouve = false;
         //iteration sur v de delta+ : si distance(sommet_courant)-distance(v)==poids(arc(sommet_courant, v)) alors sommet_courant=v et C.push_back(sommet_courant)
         //on suppose que tous les poids des arcs sont un peu differents, donc on peut remonter depuis s jusqu'a t avec seulement les distances
-        vector<long> *deltaP = ((*V)[sommet_courant]).get_deltaP();
-        for(int k = 0; (k < deltaP->size()) && !trouve; k++){
-            a = &((*A)[(*deltaP)[k]]);
+        int* deltaP = ((*V)[sommet_courant]).get_deltaP();
+        int size = ((*V)[sommet_courant]).get_nP();
+        for(int k = 0; (k < size) && !trouve; k++){
+            a = &((*A)[(deltaP)[k]]);
             v = a->get_v();
             if (pow((*distance)[sommet_courant] - (*distance)[v] - a->get_poids(),2) < 0.00001){//cout<<"distance a "<<s<<" de "<<sommet_courant<<" : "<<(*distance)[sommet_courant]<<" et distance de "<<a->get_u()<<" : "<<(*distance)[a->get_u()]<<" et abs = "<<abs((*distance)[sommet_courant] - (*distance)[a->get_u()] - a->get_poids())<<endl;compteur+=1;
                 sommet_courant=v;

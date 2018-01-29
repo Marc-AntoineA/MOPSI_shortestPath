@@ -2,7 +2,7 @@
 #include "Dijkstra.h"
 #include "Chemin.h"
 #include <queue>
-#define triplet pair<pp, long> // triplet priorite / id sommet / arc
+#define triplet pair<pp, int> // triplet priorite / id sommet / arc
 
 struct priorite2{
     bool operator()(const triplet &p1, const triplet &p2){
@@ -14,30 +14,29 @@ class ArcFlags: public Dijkstra {
      int K;                 //nombre de cells
      int target_cell;      //cell du t de la requete courante
      int start_cell;
-     vector<vector<long> > frontieres;
+     vector<vector<int> > frontieres;
      vector<int> affectationCells;     //pour un sommet du ieme cell, Cells[idSommet]=i
-     //map <pair<long, int>, int> Flags;     //pour chaque arc a, Flags[(a, C)]=1 s'il existe un plus court chemin vers un sommet de C passant par a
      vector<vector<bool> > Flags;                  //Flags[C][a]
 public:
      ArcFlags (Graphe* g):Dijkstra(g){affectationCells=vector<int>(g->get_sommets()->size() + 1);}
+     vector<vector<bool> >* getFlags(){return &Flags;}
      void initFlagsFalse();
-     void initCellsQuadrillage(int racineK, bool verbose=false);
-     void initCellsKmeans(int K, bool verbose=false);
-     //faire kmeans avec distance geographique
-     //est-ce que ca marchera ?
      void initFrontieres(bool verbose=false);
+     void initCellsQuadrillage(int racineK, bool verbose=false);
+     void init_cells_kd_tree(int k, bool verbose=false);
+     void preprocess_base(bool verbose=false);
      void preprocess_quadrillage(int racineK, bool verbose=false);
-     void preprocess_k_means(int k, bool verbose=false);
+     void preprocess_kd_tree(int k, bool verbose=false);
 
-     void empileInitFlags(priority_queue<pair<pair<long, long>, long>, vector<pair<pair<long, long>, long> >, priorite2> &F, vector<long>& dist, long u);
+     void empileInitFlags(priority_queue<triplet, vector<triplet>, priorite2> &F, vector<long>& dist, int u);
      void initialisationFlags(int k1, int k2, bool verbose=false);
      void montrer_repartition();
-     void sauvegarde(...);
      ~ArcFlags(){}
-     int getCell(long u) {return affectationCells[u];}
-     void depileEmpile(priority_queue<pp, vector<pp>, priorite> &F, vector<long>& dist, long t = 0, long s = 0, bool reverse = false);
-     long requete(long s, long t, bool verbose = false);
-     long requete_bi(long s, long t, bool verbose = false);
+     int getCell(int u) {return affectationCells[u];}
+     void depileEmpile(priority_queue<pp, vector<pp>, priorite> &F, vector<long>& dist, int t = 0, int s = 0, bool reverse = false);
+     long requete(int s, int t, bool verbose = false);
+     virtual void BD_finish(priority_queue<pp, vector<pp>, priorite> Forward, priority_queue<pp, vector<pp>, priorite> Backward, long &mu);
+     long requete_bi(int s, int t, bool verbose = false);
      void test_preprocess();
      void preprocess(string nomInput, bool verbose = false);
      void sauvegarde(string nomOutput, string instance, bool verbose = false);
@@ -51,3 +50,19 @@ struct thread_data{
     bool verbose;
     ArcFlags* AF;
 };
+
+class Node{
+    //Node *child1, *child2;
+    vector<Sommet*> elements;
+public:
+    void add(Sommet* s){elements.push_back(s);}
+    vector<Sommet*>* getEls(){return &elements;}
+};
+
+//class Node{
+//    //Node *child1, *child2;
+//    vector<int> elements;
+//public:
+//    void add(int s){elements.push_back(s);}
+//    vector<int>* getEls(){return &elements;}
+//};

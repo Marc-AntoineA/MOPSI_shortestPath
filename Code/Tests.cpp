@@ -22,13 +22,13 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     int afbd = 0;
 
     // Nombre de points visites
-    long visites_d = 0;
-    long visites_db = 0;
-    long visites_asg = 0;
-    long visites_asgbd = 0;
-    long visites_alt = 0;
-    long visites_af = 0;
-    long visites_afbd = 0;
+    int visites_d = 0;
+    int visites_db = 0;
+    int visites_asg = 0;
+    int visites_asgbd = 0;
+    int visites_alt = 0;
+    int visites_af = 0;
+    int visites_afbd = 0;
 
     Dijkstra D(&G);
     ASG Asg(&G);
@@ -38,8 +38,8 @@ void test_requete(Graphe &G, int nb_tests, string pp_alt, string pp_af){
     AF.preprocess(pp_af);
 
     for(int k = 0; k < nb_tests; k++){
-        long s = G.get_randomSommet();
-        long t = G.get_randomSommet();
+        int s = G.get_randomSommet();
+        int t = G.get_randomSommet();
 
         long distance_ref = D.requete(s, t);
         duration_d += D.get_duration();

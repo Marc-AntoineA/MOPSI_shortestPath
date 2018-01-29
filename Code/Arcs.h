@@ -5,18 +5,18 @@ using namespace std;
 
 class Arc{
 private:
-    long id;
-    long u, v;    // Identifiants pour les arcs u -> v
-    double w;        // poids
+    //int id;
+    int u, v;    // Identifiants pour les arcs u -> v
+    int w;        // poids
 
 public:
     Arc();
-    Arc(long identifiant, long src, long dest, double poids);
+    Arc(int identifiant, int src, int dest, int poids);
 
-    long get_id() const{return id;}
+    //int get_id() const{return id;}
     double get_poids() const{return w;}
-    long get_u() const{return u;}
-    long get_v() const{return v;}
+    int get_u() const{return u;}
+    int get_v() const{return v;}
 };
 
 ostream& operator<<(ostream& str, const Arc& a);

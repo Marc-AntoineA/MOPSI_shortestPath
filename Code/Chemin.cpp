@@ -2,7 +2,7 @@
 #include "fonctionsDiverses.h"
 #include <vector>
 
-void Chemin::push_back(long id){
+void Chemin::push_back(int id){
     listeId.push_back(id);
 }
 
@@ -11,7 +11,7 @@ string Chemin::chaine() const{
         return "Chemin::chaine : le chemin est vide";
     }
     string str="";
-    vector<long>::const_iterator it = listeId.begin();
+    vector<int>::const_iterator it = listeId.begin();
     for(; it!= listeId.end(); it++){
         str+=to_string(*it);
         str+=" ";
@@ -25,7 +25,7 @@ ostream& operator<<(ostream &str,const Chemin &C){
 }
 
 void Chemin::inversion(){
-    vector<long> newListe;
+    vector<int> newListe;
     int n=listeId.size();
     for (int i=0;i<n;i++){
         newListe.push_back(listeId[n-1-i]);
@@ -46,17 +46,18 @@ Chemin Chemin::join(Chemin C){
     return result;
 }
 
-double Chemin::longueur(vector<Arc> *A, vector<Sommet> *V) const{
-    long uCourant, vCourant;
-    double result = 0;
+long Chemin::longueur(vector<Arc> *A, vector<Sommet> *V) const{
+    int uCourant, vCourant;
+    long result = 0;
     bool trouve;
     for (int i=0; i<listeId.size()-1;i++){
         uCourant = listeId[i];
         vCourant = listeId[i+1];
-        vector<long> *deltaM = ((*V)[vCourant]).get_deltaM();
+        int* deltaM = ((*V)[vCourant]).get_deltaM();
+        int size = ((*V)[vCourant]).get_nM();
         trouve=false;
-        for(int k = 0; (k < deltaM->size()) && !trouve; k++){
-            Arc* a = &((*A)[(*deltaM)[k]]);
+        for(int k = 0; (k < size) && !trouve; k++){
+            Arc* a = &((*A)[(deltaM)[k]]);
             if (uCourant==a->get_u()){
                 result+=a->get_poids();
                 trouve=true;

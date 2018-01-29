@@ -4,15 +4,19 @@
 
 class ALT:public AStar{
 public:
-    vector<long> L; // sous-ensemble de sommets
-    map<pp, long> subDist; // L(u, v) = dist(u, v) où x ou y est un landmark
+    vector<int> L; // sous-ensemble de sommets
+    //map<pp, long> subDist; // L(u, v) = dist(u, v) où x ou y est un landmark
+    vector<long> subDist; //L(u*K+v) = ...
+    map<int, int> Lrecip;//
 
 public:
     ALT(Graphe *g):AStar(g){}
-    long d(long u, long v){return subDist[pp(u, v)];} // u doit être un landmark
+//    long d(int u, int v){return subDist[pp(u, v)];} // u doit être un landmark
+    long d(int u, int v){return subDist[v*L.size()+Lrecip[u]];} // u doit être un landmark
+    long d2(int u, int v){return subDist[v*L.size()+u];}
 
     void preprocess(int n, bool verbose = false);
     void preprocess(string nomInput, bool verbose = false);
     void sauvegarde(string nomOutput, string instance, bool verbose = false);
-    virtual long pi(long u, long t, long s);
+    virtual long pi(int u, int t, int s);
 };
