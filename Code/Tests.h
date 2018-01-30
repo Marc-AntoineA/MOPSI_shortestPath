@@ -6,4 +6,6 @@
 #include "ALT.h"
 #include "ArcFlags.h"
 
-void test_requete(Graphe& G, int nb_tests, string pp_alt, string pp_af);
+void test_requete(Graphe& G, int nb_tests, string instance, string pp_alt, string pp_af, string output);
+
+
