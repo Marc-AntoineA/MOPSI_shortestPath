@@ -7,6 +7,7 @@
 #include <ctime>
 
 long ALT::pi(int u, int t, int s){
+    if (notInPreprocessMode){
     long M = 0; // borne maximale (ou son estimation)
     int n = L.size();
     for(int ld = 0; ld < n; ld++){
@@ -15,6 +16,7 @@ long ALT::pi(int u, int t, int s){
         }
     }
     return M;
+    }else{return 0;}
 }
 
 void ALT::preprocess(int n, bool verbose){
@@ -22,35 +24,46 @@ void ALT::preprocess(int n, bool verbose){
     subDist = vector<long>(n*get_V()->size());
     if(verbose){
         cout << "Pre-process en cours..." << endl;
-        cout << "0% : " << flush;
+        cout << "0% : " << endl;
     }
     L.clear();
     int s; int v;
     double prec = 0;
+    notInPreprocessMode=false;
     for(int k = 0; k < n; k++){
         s = G->get_randomSommet();
         L.push_back(s);
+        Lrecip[s] = k;
 
         priority_queue<pp, vector<pp>, priorite> F;
         init_distanceForward();
+//        for (int i=1; i<get_V()->size();i++){
+//            if (distanceForward[i]!=LONG_MAX/3)cerr<<"distances mal initialisees : "<<distanceForward[i]<<endl;
+//        }
+//        for(int j=0;j<100;j++)if (pi(G->get_randomSommet(), G->get_randomSommet(), G->get_randomSommet())!=0)cerr<<"pi non nul"<<endl;
         distanceForward[s] = 0;
 
         F.push(pp(0, s));
+//        int i=0;
         while(!F.empty()){
             depileEmpile(F, distanceForward, F.top().second, s);
+//            if (i%1000000==0) cout<<F.size()<<" "<<F.top().first<<endl;
+//            i++;
         }
 
         // On stocke les distances
         for(int v=1;v<get_V()->size();v++){
 //            subDist[pp(s, v)] = distanceForward[v];
-            subDist[Lrecip[s]+L.size()*v] = distanceForward[v];
+            subDist[k+n*v] = distanceForward[v];
         }
 
-        if(verbose && (double)k / n - prec > 0.05){
-            cout << "="<< flush;
-            prec = k/n;
-        }
+//        if(verbose && (double)k / n - prec > 0.05){
+//            cout << "="<< flush;
+//            prec = k/n;
+//        }
+        if (verbose)cout<<"landmark "<<k<<" effectue"<<endl;
     }
+    notInPreprocessMode=true;
     end();
     if(verbose)
         cout << " 100% " << endl;
@@ -60,12 +73,13 @@ void ALT::preprocess(int n, bool verbose){
 
 void ALT::preprocess(string nomInput, bool verbose){
     begin();
+    if (verbose)cout<<"ALT : Chargement en cours"<<endl;
     ifstream input(nomInput.c_str());
     if(input.is_open()){
         L.clear();
         subDist.clear();
         string ligne;
-        int id1; int id2; int dist;
+        int id1; int id2; long dist;
 
         size_t k; size_t k2;
         bool needToInitSubDist=true;//
@@ -83,7 +97,7 @@ void ALT::preprocess(string nomInput, bool verbose){
             }
             if(ligne.size() > 0 && string(ligne, 0, 1) == "d"){
                 if (needToInitSubDist){//
-                    subDist=vector<long>(L.size()*get_V()->size());//
+                    subDist=vector<long>(L.size()*get_V()->size());
                     needToInitSubDist=false;//
                 }//
                 k = 2;
@@ -103,7 +117,8 @@ void ALT::preprocess(string nomInput, bool verbose){
         cerr << "ALT::preprocess : " << nomInput
              << "n'a pas pu etre ouvert. Le chargement a echoue" << endl;
     }
-    end();
+    end();cout<<"taille de L : "<<L.size()<<endl;
+    if (verbose)cout<<"\t\t ALT : Chargement termine en "<<get_duration()<<"s"<<endl;
 }
 
 void ALT::sauvegarde(string nomOutput, string instance, bool verbose){
@@ -129,7 +144,7 @@ void ALT::sauvegarde(string nomOutput, string instance, bool verbose){
         for(int k = 0; k < n; k++){
             u = L[k];
             for(int v=1;v<get_V()->size();v++){
-                output << "d " << u << " " << v << " " << d(u, v) << endl;
+                output << "d " << u << " " << v << " " << d2(k, v) << endl;
             }
         }
     }else{

@@ -164,11 +164,14 @@ void ArcFlags::initialisationFlags(int k1, int k2, bool verbose){
 //https://www.tutorialspoint.com/cplusplus/cpp_multithreading.html
 void* preprocessWithThreading(void *threadarg){
     struct thread_data *my_data;
+    string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
+    string instance = "GrandsLacs/";
     my_data = (struct thread_data *) threadarg;
     for (int i=0;i<my_data->K;i++){
         if (!my_data->doneCells[i]){
             my_data->doneCells[i]=true;
             my_data->AF->initialisationFlags(i, i+1, true);
+            my_data->AF->sauvegarde(root + instance + "outputAFkdTree1.pp", instance, true);
         }
     }
     cout<<"AF : destroying frame"<<endl;
@@ -279,7 +282,7 @@ void ArcFlags::init_cells_kd_tree(int k, bool verbose){
 
 void ArcFlags::preprocess_kd_tree(int k, bool verbose){            //j'ai fait comme si les coordonnees
     if (verbose){                                                           //des sommets etaient dans le plan (pour simplifier)
-        cout<<"debut preprocess avec quadrillage"<<endl;                   //mais j'ai pas teste et je sais pas si
+        cout<<"debut preprocess avec kd_tree"<<endl;                   //mais j'ai pas teste et je sais pas si
     }                                                                     //c'est une approximation raisonnable
     begin();
     init_cells_kd_tree(k, verbose);
@@ -451,7 +454,7 @@ long ArcFlags::requete_bi(int s, int t, bool verbose){
 }
 
 void ArcFlags::preprocess(string nomInput, bool verbose){
-    if(verbose) cout << "Chargement en cours..." << endl;
+    if(verbose) cout << "AF : Chargement en cours..." << endl;
     begin();
     ifstream input(nomInput.c_str());
     if(input.is_open()){
@@ -497,7 +500,7 @@ void ArcFlags::preprocess(string nomInput, bool verbose){
              << "n'a pas pu etre ouvert. Le chargement a echoue" << endl;
     }
     end();
-    if(verbose) cout << "\t\t Chargement terminé" << endl;
+    if(verbose) cout << "\t\t AF : Chargement termine en "<<get_duration()<<"s" << endl;
 }
 
 void ArcFlags::sauvegarde(string nomOutput, string instance, bool verbose){

@@ -8,9 +8,11 @@ public:
     //map<pp, long> subDist; // L(u, v) = dist(u, v) où x ou y est un landmark
     vector<long> subDist; //L(u*K+v) = ...
     map<int, int> Lrecip;//
+    bool notInPreprocessMode;
 
 public:
-    ALT(Graphe *g):AStar(g){}
+    vector<int>* get_L(){return &L;}
+    ALT(Graphe *g):AStar(g){notInPreprocessMode=true;}
 //    long d(int u, int v){return subDist[pp(u, v)];} // u doit être un landmark
     long d(int u, int v){return subDist[v*L.size()+Lrecip[u]];} // u doit être un landmark
     long d2(int u, int v){return subDist[v*L.size()+u];}
