@@ -33,7 +33,7 @@ public:
     int get_nM(){return nM;}
     int* get_deltaP(){return deltaP;}
     int* get_deltaM(){return deltaM;}
-    int distance(Sommet& v);
+    long distance(Sommet& v);
 
 };
 

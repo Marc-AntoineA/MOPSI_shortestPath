@@ -14,10 +14,10 @@ using namespace std;
 
 int main()
 {//int n=50;int* a = new int [n];for(int i=0; i<n; i++) a[n] = rand();cout<<a[rand()%n]*a[rand()%n]<<endl;delete[] a;return 0;//int* deltaM = new int[2]; while(true){int* old = deltaM; deltaM = new int [2]; delete [] old;}
-    //string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
-    string root = "/home/marc-antoinea/Documents/3-Formation/6 - semestre_3/MOPSI - Projet RO/MOPSI_shortestPath/Code/Instance/";
-    //string instance = "GrandsLacs/";
-    string instance = "NewYork/";
+    string root = "/home/dekeyser/Documents/MOPSI/MOPSI_shortestPath/Code/Instance/";
+    //string root = "/home/marc-antoinea/Documents/3-Formation/6 - semestre_3/MOPSI - Projet RO/MOPSI_shortestPath/Code/Instance/";
+    string instance = "GrandsLacs/";
+    //string instance = "NewYork/";
     //string instance = "USA/";
     string sommets = root + instance + "coordsGraphe.co";
     string distances = root + instance + "distancesGraphe.gr";
@@ -30,8 +30,8 @@ int main()
     //Dijkstra D(&G);
     //ArcFlags AF (&G);
 
-    //Alt.preprocess(5, true);
-    //Alt.sauvegarde(root + instance + "output5.pp", instance);
+    //Alt.preprocess(50, true);
+    //Alt.sauvegarde(root + instance + "outputALT50.pp", instance, true);
     //Alt.preprocess(root + instance + "output5.pp", true);//
     //cout << Alt.d(1, 1532) << endl;
     //cout << Alt.requete(2032000, 1, true) << endl;//
@@ -60,9 +60,19 @@ int main()
     //ASG Asg(&G);
     //cout<<Asg.requete_bi(129294, 254505, true)<<endl;
 
-    test_requete(G, 1000, instance, root + instance + "output5.pp",
-        root + instance + "outputAF1.pp", root + instance + "output2.csv");
+    test_requete(G, 1000, instance, root + instance + "outputALT15.pp",
+        root + instance + "outputAFkdTree4.pp", root + instance + "output2.csv");
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
 

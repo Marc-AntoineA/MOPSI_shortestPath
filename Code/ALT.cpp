@@ -37,30 +37,18 @@ void ALT::preprocess(int n, bool verbose){
 
         priority_queue<pp, vector<pp>, priorite> F;
         init_distanceForward();
-//        for (int i=1; i<get_V()->size();i++){
-//            if (distanceForward[i]!=LONG_MAX/3)cerr<<"distances mal initialisees : "<<distanceForward[i]<<endl;
-//        }
-//        for(int j=0;j<100;j++)if (pi(G->get_randomSommet(), G->get_randomSommet(), G->get_randomSommet())!=0)cerr<<"pi non nul"<<endl;
         distanceForward[s] = 0;
 
         F.push(pp(0, s));
-//        int i=0;
         while(!F.empty()){
             depileEmpile(F, distanceForward, F.top().second, s);
-//            if (i%1000000==0) cout<<F.size()<<" "<<F.top().first<<endl;
-//            i++;
         }
 
         // On stocke les distances
         for(int v=1;v<get_V()->size();v++){
-//            subDist[pp(s, v)] = distanceForward[v];
             subDist[k+n*v] = distanceForward[v];
         }
 
-//        if(verbose && (double)k / n - prec > 0.05){
-//            cout << "="<< flush;
-//            prec = k/n;
-//        }
         if (verbose)cout<<"landmark "<<k<<" effectue"<<endl;
     }
     notInPreprocessMode=true;
@@ -117,7 +105,7 @@ void ALT::preprocess(string nomInput, bool verbose){
         cerr << "ALT::preprocess : " << nomInput
              << "n'a pas pu etre ouvert. Le chargement a echoue" << endl;
     }
-    end();cout<<"taille de L : "<<L.size()<<endl;
+    end();
     if (verbose)cout<<"\t\t ALT : Chargement termine en "<<get_duration()<<"s"<<endl;
 }
 

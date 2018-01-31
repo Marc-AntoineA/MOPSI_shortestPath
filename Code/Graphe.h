@@ -26,4 +26,6 @@ public:
     void show();
     Sommet* get_sommet(int id){return &V[id];}
     Graphe(string nomFichierSommets, string nomFichierPoids);
+
+    vector<pair<int, int> >getTestSample(int N, bool verbose=false);
 };

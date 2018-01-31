@@ -83,7 +83,8 @@ double to_grad(int alpha){
 
 
 const double R = 6378000; // rayon de la terre
-int Sommet::distance(Sommet &v){
+long Sommet::distance(Sommet &v){
+    if (id==v.id) return 0;
     pair<int, int> vCoords = v.get_coords();// intitude / latitude
     return .99*R*(M_PI/2 - asin(sin(to_grad(y))*sin(to_grad(vCoords.second))
                                + cos(to_grad(x) - to_grad(vCoords.first))

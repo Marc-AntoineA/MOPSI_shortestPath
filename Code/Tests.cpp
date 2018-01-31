@@ -55,9 +55,13 @@ void test_requete(Graphe &G, int nb_tests, string instance, string pp_alt, strin
     write << "ALTBD_" << pp_alt << ",";
     write << "ALTBD_dur" << pp_alt << endl;
 
+    vector<pair<int, int> > testSample = G.getTestSample(nb_tests, true);
+
     for(int k = 0; k < nb_tests; k++){
-        int s = G.get_randomSommet();
-        int t = G.get_randomSommet();
+//        int s = G.get_randomSommet();
+//        int t = G.get_randomSommet();
+        int s = testSample[k].first;
+        int t = testSample[k].second;
 
         long distance_ref = D.requete(s, t);
         duration_d += D.get_duration();
@@ -151,7 +155,7 @@ void test_requete(Graphe &G, int nb_tests, string instance, string pp_alt, strin
     cout << " \t A* geographique        : " << asg << "/" << nb_tests << endl;
     cout << " \t A* Geo Bidirectionnel  : " << asgbd << "/" << nb_tests << endl;
     cout << " \t ALT                    : " << alt << "/" << nb_tests << endl;
-    cout << " \t ALT Bidirectionnel     : " << altbd << "/" << nb_tests << endl;
+    cout << " \t ALT Bidirectionnel     : " << altbd << "/" << nb_tests << endl;
     cout << " \t AF                     : " << af << "/" << nb_tests << endl;
     cout << " \t AF Bidirectionnel      : " << afbd << "/" << nb_tests << endl;
     cout << endl;
@@ -173,7 +177,7 @@ void test_requete(Graphe &G, int nb_tests, string instance, string pp_alt, strin
     cout << " \t A* geographique        : " << visites_asg/(double) nb_tests << endl;
     cout << " \t A* Geo Bidirectionnel  : " << visites_asgbd/(double) nb_tests << endl;
     cout << " \t ALT                    : " << visites_alt/(double) nb_tests << endl;
-    cout << " \t ALT Bidirectionnel     : " << visites_altbd/(double) nb_tests << endl;
+    cout << " \t ALT Bidirectionnel     : " << visites_altbd/(double) nb_tests << endl;
     cout << " \t AF                     : " << visites_af/(double) nb_tests << endl;
     cout << " \t AF Bidirectionnel      : " << visites_afbd/(double) nb_tests << endl;
     cout << endl;

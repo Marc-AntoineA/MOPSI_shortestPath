@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <ctime>
 #include "fonctionsDiverses.h"
+#include <climits>
+#include <cmath>
 using namespace std;
 
 Graphe::Graphe(string nomFichierSommets, string nomFichierPoids)
@@ -158,4 +160,54 @@ int Graphe::getReverseArc(const int &a){
 
 int Graphe::get_randomSommet(){
     return rand()%(V.size()-1)+1;
+}
+
+vector<pair<int, int> >Graphe::getTestSample(int N, bool verbose){
+    if (verbose)cout<<"exploration en cours..."<<endl;
+    long min=LONG_MAX;
+    long max=0;
+    long d;
+    int u,v;
+    for (int i=0;i<10000;i++){
+        u = get_randomSommet();
+        v = get_randomSommet();
+        d = V[u].distance(V[v]);
+        if (d < min) min = d;
+        if (d > max) max = d;
+    }
+    if (verbose)cout<<"exploration finie "<<min<<" "<<max<<endl<<"recherche de sommets aux distances bien reparties..."<<endl;
+
+    double a = log(double(min));
+    double b = log(double(max));
+
+    vector<pair<int, int> >result;
+    vector<int> hist(10, 0);
+    int count = 0;
+    int k;
+    double c;
+    int i;
+    while (count < N){
+        u = get_randomSommet();
+        v = get_randomSommet();
+        c = log(V[u].distance(V[v]));
+        if (c > b || c < a)
+            continue;
+        k = int(10*(c-a)/(b-a));//cout<<k<<endl;
+        if (k < 0 || k > 9) {cerr<<"mauvais k : "<<k<<" "<<c<<" "<<a<<" "<<b<<" distance entre  "<<u<<" et "<<v<<" : "<<V[u].distance(V[v])<<endl;continue;}
+        if (hist[k] < N/10){
+            hist[k]++;
+            count++;
+            result.push_back(pair<int, int>(u, v));
+        }
+        if (verbose && i%100000==0){
+            cout<<"histogramme actuel ";
+            for (int j=0;j<10;j++)
+                cout<<hist[j]<<" ";
+            cout<<count<<endl;
+        }
+        i++;
+    }
+    if (verbose)cout<<"recherche finie"<<endl;
+    if (result.size()!=N)cerr<<"pas assez de resultats"<<endl;
+    return result;
 }
